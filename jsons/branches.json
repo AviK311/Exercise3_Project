@@ -1,0 +1,16 @@
+{
+  "branches": [
+    {
+      "name": "Tel Aviv",
+      "ID": 1,
+      "address": "Shlomo Ibn Gabirol St 70",
+      "active": true
+    },
+    {
+      "name": "Jerusalem",
+      "ID": 2,
+      "address": "David Remez St 4",
+      "active": true
+    }
+  ]
+}

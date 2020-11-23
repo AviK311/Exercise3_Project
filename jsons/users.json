@@ -6,7 +6,7 @@
       "email": "Thomas_Barry@BestBudsForever.org",
       "user_type": "manager",
       "password": "WpQdNgXXbm",
-      "Branch": null,
+      "Branch": 1,
       "ID": 1
     },
     {
@@ -15,7 +15,7 @@
       "email": "Susan_Vinson@BestBudsForever.org",
       "user_type": "employee",
       "password": "o8mrsqZtxN",
-      "Branch": null,
+      "Branch": 1,
       "ID": 2
     },
     {
@@ -24,7 +24,7 @@
       "email": "Travis_Wilcox@BestBudsForever.org",
       "user_type": "manager",
       "password": "xhiu3N1Z73",
-      "Branch": null,
+      "Branch": 2,
       "ID": 3
     },
     {
@@ -33,7 +33,7 @@
       "email": "Amanda_Holstein@BestBudsForever.org",
       "user_type": "employee",
       "password": "CTNrPJaCxy",
-      "Branch": null,
+      "Branch": 2,
       "ID": 4
     },
     {
@@ -78,7 +78,7 @@
       "email": "Victor_Albert@BestBudsForever.org",
       "user_type": "employee",
       "password": "Qq9sdOAwS7",
-      "Branch": null,
+      "Branch": 1,
       "ID": 9
     },
     {
@@ -87,7 +87,7 @@
       "email": "Charles_Miller@BestBudsForever.org",
       "user_type": "employee",
       "password": "Yy2fOwunTc",
-      "Branch": null,
+      "Branch": 2,
       "ID": 10
     }
   ]
