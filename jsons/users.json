@@ -1,0 +1,94 @@
+{
+  "users": [
+    {
+      "fname": "Thomas",
+      "lname": "Barry",
+      "email": "Thomas_Barry@BestBudsForever.org",
+      "user_type": "manager",
+      "password": "WpQdNgXXbm",
+      "Branch": null,
+      "ID": 1
+    },
+    {
+      "fname": "Susan",
+      "lname": "Vinson",
+      "email": "Susan_Vinson@BestBudsForever.org",
+      "user_type": "employee",
+      "password": "o8mrsqZtxN",
+      "Branch": null,
+      "ID": 2
+    },
+    {
+      "fname": "Travis",
+      "lname": "Wilcox",
+      "email": "Travis_Wilcox@BestBudsForever.org",
+      "user_type": "manager",
+      "password": "xhiu3N1Z73",
+      "Branch": null,
+      "ID": 3
+    },
+    {
+      "fname": "Amanda",
+      "lname": "Holstein",
+      "email": "Amanda_Holstein@BestBudsForever.org",
+      "user_type": "employee",
+      "password": "CTNrPJaCxy",
+      "Branch": null,
+      "ID": 4
+    },
+    {
+      "fname": "Elsie",
+      "lname": "Copher",
+      "email": "Elsie_Copher@BestBudsForever.org",
+      "user_type": "customer",
+      "password": "y8S3aQCAPf",
+      "Branch": null,
+      "ID": 5
+    },
+    {
+      "fname": "Brenda",
+      "lname": "Kaelker",
+      "email": "Brenda_Kaelker@BestBudsForever.org",
+      "user_type": "customer",
+      "password": "7omYxf3D5K",
+      "Branch": null,
+      "ID": 6
+    },
+    {
+      "fname": "Robert",
+      "lname": "Harris",
+      "email": "Robert_Harris@BestBudsForever.org",
+      "user_type": "customer",
+      "password": "iugrdgtC2w",
+      "Branch": null,
+      "ID": 7
+    },
+    {
+      "fname": "John",
+      "lname": "Higgs",
+      "email": "John_Higgs@BestBudsForever.org",
+      "user_type": "customer",
+      "password": "TaNpNgIkJi",
+      "Branch": null,
+      "ID": 8
+    },
+    {
+      "fname": "Victor",
+      "lname": "Albert",
+      "email": "Victor_Albert@BestBudsForever.org",
+      "user_type": "employee",
+      "password": "Qq9sdOAwS7",
+      "Branch": null,
+      "ID": 9
+    },
+    {
+      "fname": "Charles",
+      "lname": "Miller",
+      "email": "Charles_Miller@BestBudsForever.org",
+      "user_type": "employee",
+      "password": "Yy2fOwunTc",
+      "Branch": null,
+      "ID": 10
+    }
+  ]
+}
