@@ -1,20 +1,23 @@
-
-
-let path = require("path");
-//express server
+let path = require('path');
+let express = require('express');
+let app = express();
 const users = require('./jsons/users').users;
 const flowers = require('./jsons/flowers').flowers
-let express = require("express");
-let app = express();
-app.set('view engine','ejs');
-app.use(express.static(path.join(__dirname, 'views')));
 
 
+// set the view engine to ejs
+app.set('view engine', 'ejs');
 
-app.get('/', function(req, res){
-    res.render("index");
+app.use(express.static(path.join(__dirname, 'public')));
 
+app.get('/', function (req, res) {
+  res.render('index');
 });
+
+app.get('/about', function(req, res) {
+  res.render('about');
+});
+
 
 
 

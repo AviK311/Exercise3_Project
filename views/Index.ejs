@@ -1,18 +1,16 @@
 <!DOCTYPE html>
-<html>
+<!-- views/index.ejs -->
+<html lang="en">
 <head>
-  <link rel="stylesheet" type ="text/css" href="Style.css"></head>
-<body>
-
-<h2>My Favorite Flowers</h2>
-<ol>
-  <% Students.forEach((stud)=>{%>
-    <li><%=stud.fname%>&nbsp;<%=stud.lname%><br>
-        Age: <%=stud.age%> - GPA: <%=stud.avg%></li>
-    <%})%>
-</ol>
-
-
-
+    <%- include('./partials/head') %>
+</head>
+<body class="container">
+    <header>
+        <%- include ('./partials/header') %>
+    </header>
+  <main></main>
+    <footer>
+        <%- include ('partials/footer') %>
+    </footer>
 </body>
 </html>
