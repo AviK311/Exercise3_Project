@@ -4,84 +4,84 @@
       "name": "Rose",
       "price": 5.31,
       "color": ["white","pink","red"],
-      "img": "https://www.flyingflowers.co.uk/ff_images/rose.jpg",
+      "img": "/images/flowers/rose.jpg",
       "ID": 0
     },
     {
       "name": "Lily",
       "price": 6.67,
       "color": ["white", "yellow", "pink", "red", "orange"],
-      "img": "https://www.flyingflowers.co.uk/ff_images/lilies.jpg",
+      "img": "/images/flowers/lilies.jpg",
       "ID": 1
     },
     {
       "name": "Tulip",
       "price": 3.72,
       "color":  ["white", "yellow", "pink", "red", "orange", "purple"],
-      "img": "https://www.flyingflowers.co.uk/ff_images/tulips.jpg",
+      "img": "/images/flowers/tulips.jpg",
       "ID": 2
     },
     {
       "name": "Orchid",
       "price": 9.63,
       "color": ["purple","pink"],
-      "img": "https://www.flyingflowers.co.uk/ff_images/orchids.jpg",
+      "img": "/images/flowers/orchids.jpg",
       "ID": 3
     },
     {
       "name": "Carnation",
       "price": 6.06,
       "color": ["pink", "white", "red", "yellow"],
-      "img": "https://www.flyingflowers.co.uk/ff_images/carnation.jpg",
+      "img": "/images/flowers/carnation.jpg",
       "ID": 4
     },
     {
       "name": "Hyacinth",
       "price": 5.51,
       "color": ["white", "orange", "yellow", "pink", "red", "purple", "blue"],
-      "img": "https://www.flyingflowers.co.uk/ff_images/hyacynth.jpg",
+      "img": "/images/flowers/hyacynth.jpg",
       "ID": 5
     },
     {
       "name": "Peruvian Lily",
       "price": 4.22,
       "color": ["yellow", "pink", "orange", "white"],
-      "img": "https://www.flyingflowers.co.uk/ff_images/peruvian_lily.jpg",
+      "img": "/images/flowers/peruvian_lily.jpg",
       "ID": 6
     },
     {
       "name": "Chrysanthemum",
       "price": 4.4,
       "color": ["white", "yellow", "pink", "orange", "red", "purple"],
-      "img": "https://www.flyingflowers.co.uk/ff_images/Chrysanthemums.jpg",
+      "img": "/images/flowers/Chrysanthemums.jpg",
       "ID": 7
     },
     {
       "name": "Gladiolus",
       "price": 2.9,
       "color": ["white", "yellow", "pink", "purple", "green"],
-      "img": "https://www.flyingflowers.co.uk/ff_images/Gladiolus.jpg",
+      "img": "/images/flowers/Gladiolus.jpg",
       "ID": 8
     },
     {
       "name": "Anemone",
       "price": 3.59,
       "color": ["red", "white", "purple"],
-      "img": "https://www.flyingflowers.co.uk/ff_images/Anemone.jpg",
+      "img": "/images/flowers/Anemone.jpg",
       "ID": 9
     },
     {
       "name": "Daffodil",
       "price": 1.49,
       "color": ["yellow", "orange","white"],
-      "img": "https://www.flyingflowers.co.uk/ff_images/Daffodil.jpg",
+      "img": "/images/flowers/Daffodil.jpg",
       "ID": 10
     },
     {
       "name": "Sunflower",
       "price": 4.4,
       "color": ["yellow", "red", "brown", "orange"],
-      "img": "https://www.flyingflowers.co.uk/ff_images/sunflower.jpg",
+      "img": "/images/flowers/sunflower.jpg",
       "ID": 11
     }
   ]
