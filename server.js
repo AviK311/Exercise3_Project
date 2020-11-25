@@ -18,6 +18,10 @@ app.get('/about', function(req, res) {
   res.render('about');
 });
 
+app.post('/authenticate', function(req, res) {
+  console.log(req.body.email)
+});
+
 
 
 
