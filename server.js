@@ -4,6 +4,14 @@ const { BADFLAGS } = require("dns");
 let app = express();
 const users = require("./jsons/users").users;
 const flowers = require("./jsons/flowers").flowers;
+const bodyParser = require('body-parser');
+
+app.use(bodyParser.urlencoded({
+    extended: true
+}));
+
+app.use(bodyParser.json());
+
 
 var password_attempts = 0;
 
@@ -19,13 +27,13 @@ app.get("/", function(req, res) {
 app.get("/about", function(req, res) {
     res.render("about");
 });
-app.get("/authenticate", function(req, res) {
-    let query = req.query;
-    if (!validate_email(query.email)) {
+app.post("/authenticate", function(req, res) {
+    let body = req.body;
+    if (!validate_email(body.email)) {
         res.json({ error: "Email is invalid" });
         return;
     }
-    let user = users.filter((u) => u.email == query.email);
+    let user = users.filter((u) => u.email == body.email);
     console.log(user);
     if (user.length == 0)
         res.json({ error: "There is no user with that Email Address" });
@@ -35,7 +43,7 @@ app.get("/authenticate", function(req, res) {
         return;
     }
     user = user[0];
-    if (user.password == query.password) {
+    if (user.password == body.password) {
         set_cookies(res, user);
         res.json(user);
     } else {
