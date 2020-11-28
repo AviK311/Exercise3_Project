@@ -1,6 +1,15 @@
 {
   "users": [
     {
+      "fname": "Avi",
+      "lname": "K",
+      "email": "abkoen@BestBudsForever.org",
+      "user_type": "Developer",
+      "password": "J0gging9",
+      "Branch": 1,
+      "ID": 0
+    },
+    {
       "fname": "Thomas",
       "lname": "Barry",
       "email": "Thomas_Barry@BestBudsForever.org",
