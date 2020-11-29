@@ -31,12 +31,10 @@
                     aria-haspopup="true"
                     aria-expanded="false"
                 >
-                    More Options
+                    Navigate
                 </a>
-                <div class="dropdown-menu" aria-labelledby="navbarDropdownMenuLink">
-                    <!-- <a class="dropdown-item" href="#">Action</a>
-			<a class="dropdown-item" href="#">Another action</a>
-			<a class="dropdown-item" href="#">Something else here</a> -->
+                <div id="navbarDropDown" class="dropdown-menu" aria-labelledby="navbarDropdownMenuLink">
+                    <a class="dropdown-item" onclick="$('#main').load('flowers');">Flowers</a>
                 </div>
             </li>
         </ul>
@@ -128,6 +126,16 @@
                     $("#loginModal").modal("toggle");
                     $("#login_btn").hide();
                     $("#logout_btn").show();
+                    console.log(data);
+                    // if (data.authority) {
+                    //     let elementToAdd = "<a class='dropdown-item' id = 'newOption' >" + data.addedOptions + "</a>";
+
+
+                    //     $("#navbarDropDown").append(elementToAdd);
+                    //     $("#newOption").click(() => $("#main").load($(this).html()));
+                    //     // $("#navbarDropDown").append("does this work?");
+
+                    // }
                 } else {
                     console.log("Error:", data.message);
                 }

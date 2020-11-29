@@ -16,7 +16,7 @@ app.use(bodyParser.json());
 var password_attempts = 0;
 
 
-var current_user;
+var currentUser = null;
 
 // set the view engine to ejs
 app.set("view engine", "ejs");
@@ -34,9 +34,17 @@ app.get("/about", function(req, res) {
 app.get("/flowers", function(req, res) {
     res.render("partials/flowerList", { flowers: flowers });
 });
+app.get("/users", function(req, res) {
+    console.log(currentUser);
+    if (currentUser == null || (currentUser.userType != "manager" && currentUser.userType != "Developer")) {
+        res.send("You are unauthorized to view this content")
+        return;
+    }
+    res.render("partials/userList", { users: users });
+});
 app.post("/authenticate", function(req, res) {
     let body = req.body;
-    if (!validate_email(body.email)) {
+    if (!validateEmail(body.email)) {
         res.json({ success: false, message: "Email is invalid" });
         return;
     }
@@ -50,9 +58,19 @@ app.post("/authenticate", function(req, res) {
     }
     user = user[0];
     if (user.password == body.password) {
-        set_cookies(res, user);
-        res.json({ success: true, user: user });
-        current_user = user;
+        setCookies(res, user);
+        let jsonToSend = {
+            success: true,
+            user: user,
+            authority: isAuthorized(user)
+        }
+        if (jsonToSend.authority) {
+            jsonToSend.addedOptions = "users";
+        }
+        console.log(jsonToSend);
+        res.json(jsonToSend);
+        currentUser = user;
+
     } else {
         res.json({ success: false, message: "Wrong Password" });
         password_attempts++;
@@ -60,8 +78,8 @@ app.post("/authenticate", function(req, res) {
 });
 
 app.get("/logout", (req, res) => {
-    current_user = null;
-    set_cookies(res, { fname: '', lname: '', email: '' });
+    currentUser = null;
+    setCookies(res, { fname: '', lname: '', email: '' });
     res.json({ success: true });
 });
 
@@ -69,13 +87,19 @@ app.listen(8071, function() {
     console.log("running express server on 8071");
 });
 
-function set_cookies(res, user) {
+function setCookies(res, user) {
     res.cookie("fname", user.fname);
     res.cookie("lname", user.lname);
     res.cookie("email", user.email);
 }
 
-function validate_email(email) {
+function validateEmail(email) {
     const re = /[\w.]{1,20}@\w{1,20}(\.\w{2,3}){1,2}/g;
     return re.test(email);
+}
+
+function isAuthorized(user) {
+    if (user == null) return false;
+    if (user.userType == "Developer" || user.userType == "manager") return true;
+    return false;
 }
