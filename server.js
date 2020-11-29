@@ -30,6 +30,10 @@ app.get("/", function(req, res) {
 app.get("/about", function(req, res) {
     res.render("about");
 });
+
+app.get("/flowers", function(req, res) {
+    res.render("partials/flowerList", { flowers: flowers });
+});
 app.post("/authenticate", function(req, res) {
     let body = req.body;
     if (!validate_email(body.email)) {

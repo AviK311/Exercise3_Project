@@ -1,73 +1,5 @@
 <nav class="navbar navbar-expand-lg navbar-light bg-warning">
-    <script>
-        async function get_user() {
-            if ($("#email").val() == "" || $("#password").val() == "") return;
-            fetch("/authenticate", {
-                    method: "POST",
-                    headers: {
-                        "Content-Type": "application/json",
-                    },
-                    body: JSON.stringify({
-                        email: $("#email").val(),
-                        password: $("#password").val(),
-                    }),
-                })
-                .then((res) => res.json())
-                .then((data) => {
-                    if (data.success) {
-                        console.log("Login Successful");
-                        $("#loginModal").modal("toggle");
-                        $("#login_btn").hide();
-                        $("#logout_btn").show();
-                    } else {
-                        console.log("Error:", data.message);
-                    }
-                })
-                .catch((error) => {
-                    console.error("Failed to connect to server");
-                });
-        }
 
-        async function logout() {
-            fetch("/logout")
-                .then((res) => res.json())
-                .then((data) => {
-                    if (data.success) {
-                        console.log("Logout Successful");
-                        $("#logoutModal").modal("toggle");
-                        $("#login_btn").show();
-                        $("#logout_btn").hide();
-                    }
-                })
-                .catch((error) => {
-                    console.error("Failed to connect to server");
-                });
-        }
-
-        function check_user() {
-            let fname = getCookie("fname");
-            console.log("fname = ", fname);
-            if (fname != null && fname != "") {
-                $("#login_btn").hide();
-                $("#logout_btn").show();
-            }
-            let lname = getCookie("lname");
-
-        }
-
-
-
-        function getCookie(name) {
-            var nameEQ = name + "=";
-            var ca = document.cookie.split(';');
-            for (var i = 0; i < ca.length; i++) {
-                var c = ca[i];
-                while (c.charAt(0) == ' ') c = c.substring(1, c.length);
-                if (c.indexOf(nameEQ) == 0) return c.substring(nameEQ.length, c.length);
-            }
-            return null;
-        }
-    </script>
     <a class="navbar-brand" href="#"><img src="/images/logos/head.png" class="nav-logo" /></a>
     <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNavDropdown" aria-controls="navbarNavDropdown" aria-expanded="false" aria-label="Toggle navigation">
         <span class="navbar-toggler-icon"></span>
@@ -177,5 +109,72 @@
     </div>
 </div>
 <script>
+    async function get_user() {
+        if ($("#email").val() == "" || $("#password").val() == "") return;
+        fetch("/authenticate", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                },
+                body: JSON.stringify({
+                    email: $("#email").val(),
+                    password: $("#password").val(),
+                }),
+            })
+            .then((res) => res.json())
+            .then((data) => {
+                if (data.success) {
+                    console.log("Login Successful");
+                    $("#loginModal").modal("toggle");
+                    $("#login_btn").hide();
+                    $("#logout_btn").show();
+                } else {
+                    console.log("Error:", data.message);
+                }
+            })
+            .catch((error) => {
+                console.error("Failed to connect to server");
+            });
+    }
+
+    async function logout() {
+        fetch("/logout")
+            .then((res) => res.json())
+            .then((data) => {
+                if (data.success) {
+                    console.log("Logout Successful");
+                    $("#logoutModal").modal("toggle");
+                    $("#login_btn").show();
+                    $("#logout_btn").hide();
+                }
+            })
+            .catch((error) => {
+                console.error("Failed to connect to server");
+            });
+    }
+
+    function check_user() {
+        let fname = getCookie("fname");
+        console.log("fname = ", fname);
+        if (fname != null && fname != "") {
+            $("#login_btn").hide();
+            $("#logout_btn").show();
+        }
+        let lname = getCookie("lname");
+
+    }
+
+
+
+    function getCookie(name) {
+        var nameEQ = name + "=";
+        var ca = document.cookie.split(';');
+        for (var i = 0; i < ca.length; i++) {
+            var c = ca[i];
+            while (c.charAt(0) == ' ') c = c.substring(1, c.length);
+            if (c.indexOf(nameEQ) == 0) return c.substring(nameEQ.length, c.length);
+        }
+        return null;
+    }
     check_user();
 </script>

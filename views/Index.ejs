@@ -6,11 +6,15 @@
     <%- include('./partials/head') %>
 </head>
 
-<body class="container">
+<body class="container" onload="$('#main').load('flowers');">
     <header>
         <%- include ('./partials/header') %>
     </header>
-    <main></main>
+    <main>
+        <div id="main">
+
+        </div>
+    </main>
     <footer>
         <%- include ('partials/footer') %>
     </footer>
