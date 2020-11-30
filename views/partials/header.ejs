@@ -1,5 +1,4 @@
 <nav class="navbar navbar-expand-lg navbar-light bg-warning">
-
     <a class="navbar-brand" href="#"><img src="/images/logos/head.png" class="nav-logo" /></a>
     <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNavDropdown" aria-controls="navbarNavDropdown" aria-expanded="false" aria-label="Toggle navigation">
         <span class="navbar-toggler-icon"></span>
@@ -17,8 +16,9 @@
                 <a class="nav-link" href="#loginModal" data-toggle="modal">Login</a
                 >
             </li>
-            <li id="logout_btn" class="nav-item"  style="display: none;">
-                <a class="nav-link" href="#logoutModal" data-toggle="modal">Logout</a
+            <li id="logout_btn" class="nav-item" style="display: none">
+                <a class="nav-link" href="#logoutModal" data-toggle="modal"
+                    >Logout</a
                 >
             </li>
 
@@ -34,7 +34,22 @@
                     Navigate
                 </a>
                 <div id="navbarDropDown" class="dropdown-menu" aria-labelledby="navbarDropdownMenuLink">
-                    <a class="dropdown-item" onclick="$('#main').load('flowers');">Flowers</a>
+                    <a class="dropdown-item" onclick="$('#main').load('flowers');">Flowers</a
+                    >
+                    <a
+                        id="userDropDown"
+                        class="dropdown-item"
+                        onclick="$('#main').load('users');"
+                        style="display: none"
+                        >Users</a
+                    >
+                    <a
+                        id="branchDropDown"
+                        class="dropdown-item"
+                        onclick="$('#main').load('branches');"
+                        style="display: none"
+                        >Branches</a
+                    >
                 </div>
             </li>
         </ul>
@@ -47,14 +62,24 @@
             <form action="javascript:void(0);">
                 <div class="modal-header">
                     <h4 class="modal-title">Login</h4>
-                    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">
+                    <button
+                        type="button"
+                        class="close"
+                        data-dismiss="modal"
+                        aria-hidden="true"
+                    >
                         &times;
                     </button>
                 </div>
                 <div class="modal-body">
                     <div class="form-group">
                         <label>Email</label>
-                        <input type="text" id="email" class="form-control" required="required" />
+                        <input
+                            type="text"
+                            id="email"
+                            class="form-control"
+                            required="required"
+                        />
                     </div>
                     <div class="form-group">
                         <div class="clearfix">
@@ -62,127 +87,142 @@
                             <a href="#" class="float-right text-muted">
                                 <small>Forgot?</small>
                             </a>
-                        </div>
-
-                        <input id="password" type="password" class="form-control" required="required" />
-                    </div>
                 </div>
-                <div class="modal-footer justify-content-between">
-                    <label class="form-check-label">
+
+                <input id="password" type="password" class="form-control" required="required" />
+    </div>
+    </div>
+    <div class="modal-footer justify-content-between">
+        <label class="form-check-label">
                         <input type="checkbox" />
                         Remember me
                     </label>
-                    <button class="btn btn-primary" onclick="get_user()">
+        <button class="btn btn-primary" onclick="get_user()">
                         Login
                     </button>
-                </div>
-            </form>
-        </div>
     </div>
-</div>
+    </form>
+    </div>
+    </div>
+    </div>
 
-<div id="logoutModal" class="modal fade">
-    <div class="modal-dialog modal-login">
-        <div class="modal-content">
-            <form action="javascript:void(0);">
-                <div class="modal-header">
-                    <h4 class="modal-title">Log Out</h4>
-                    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">
+    <div id="logoutModal" class="modal fade">
+        <div class="modal-dialog modal-login">
+            <div class="modal-content">
+                <form action="javascript:void(0);">
+                    <div class="modal-header">
+                        <h4 class="modal-title">Log Out</h4>
+                        <button type="button" class="close" data-dismiss="modal" aria-hidden="true">
                         &times;
                     </button>
-                </div>
-                <div class="modal-body">
-                    Are you sure you want to log out?
-                </div>
-                <div class="modal-footer justify-content-between">
-                    <button class="btn btn-primary" onclick="logout()">
+                    </div>
+                    <div class="modal-body">Are you sure you want to log out?</div>
+                    <div class="modal-footer justify-content-between">
+                        <button class="btn btn-primary" onclick="logout()">
                         Yes
                     </button>
-                    <button class="btn btn-primary" data-dismiss="modal">
+                        <button class="btn btn-primary" data-dismiss="modal">
                         No
                     </button>
-                </div>
-            </form>
+                    </div>
+                </form>
+            </div>
         </div>
     </div>
-</div>
-<script>
-    async function get_user() {
-        if ($("#email").val() == "" || $("#password").val() == "") return;
-        fetch("/authenticate", {
-                method: "POST",
-                headers: {
-                    "Content-Type": "application/json",
-                },
-                body: JSON.stringify({
-                    email: $("#email").val(),
-                    password: $("#password").val(),
-                }),
-            })
-            .then((res) => res.json())
-            .then((data) => {
-                if (data.success) {
-                    console.log("Login Successful");
-                    $("#loginModal").modal("toggle");
-                    $("#login_btn").hide();
-                    $("#logout_btn").show();
-                    console.log(data);
-                    // if (data.authority) {
-                    //     let elementToAdd = "<a class='dropdown-item' id = 'newOption' >" + data.addedOptions + "</a>";
+    <script>
+        function isAuthorized(userType) {
+            return (
+                userType == "Developer" ||
+                userType == "manager"
+            );
 
-
-                    //     $("#navbarDropDown").append(elementToAdd);
-                    //     $("#newOption").click(() => $("#main").load($(this).html()));
-                    //     // $("#navbarDropDown").append("does this work?");
-
-                    // }
-                } else {
-                    console.log("Error:", data.message);
-                }
-            })
-            .catch((error) => {
-                console.error("Failed to connect to server");
-            });
-    }
-
-    async function logout() {
-        fetch("/logout")
-            .then((res) => res.json())
-            .then((data) => {
-                if (data.success) {
-                    console.log("Logout Successful");
-                    $("#logoutModal").modal("toggle");
-                    $("#login_btn").show();
-                    $("#logout_btn").hide();
-                }
-            })
-            .catch((error) => {
-                console.error("Failed to connect to server");
-            });
-    }
-
-    function check_user() {
-        let fname = getCookie("fname");
-        console.log("fname = ", fname);
-        if (fname != null && fname != "") {
-            $("#login_btn").hide();
-            $("#logout_btn").show();
         }
-        let lname = getCookie("lname");
 
-    }
-
-
-
-    function getCookie(name) {
-        var nameEQ = name + "=";
-        var ca = document.cookie.split(';');
-        for (var i = 0; i < ca.length; i++) {
-            var c = ca[i];
-            while (c.charAt(0) == ' ') c = c.substring(1, c.length);
-            if (c.indexOf(nameEQ) == 0) return c.substring(nameEQ.length, c.length);
+        async function get_user() {
+            if ($("#email").val() == "" || $("#password").val() == "") return;
+            fetch("/authenticate", {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json",
+                    },
+                    body: JSON.stringify({
+                        email: $("#email").val(),
+                        password: $("#password").val(),
+                    }),
+                })
+                .then((res) => res.json())
+                .then((data) => {
+                    if (data.success) {
+                        console.log("Login Successful");
+                        $("#loginModal").modal("toggle");
+                        $("#login_btn").hide();
+                        $("#logout_btn").show();
+                        if (isAuthorized(data.user.userType)) {
+                            $("#userDropDown").show();
+                            $("#branchDropDown").show();
+                        }
+                    } else {
+                        console.log("Error:", data.message);
+                    }
+                })
+                .catch((error) => {
+                    console.error("Failed to connect to server");
+                });
         }
-        return null;
-    }
-    check_user();
-</script>
+
+        async function logout() {
+            fetch("/logout")
+                .then((res) => res.json())
+                .then((data) => {
+                    if (data.success) {
+                        console.log("Logout Successful");
+                        $("#logoutModal").modal("toggle");
+                        $("#login_btn").show();
+                        $("#logout_btn").hide();
+                    }
+                })
+                .catch((error) => {
+                    console.error("Failed to connect to server");
+                });
+        }
+
+        async function check_user() {
+            let fname = getCookie("fname");
+            if (fname != null && fname != "") {
+                $("#login_btn").hide();
+                $("#logout_btn").show();
+            }
+            let lname = getCookie("lname");
+
+            let userType = getCookie("userType");
+            if (isAuthorized(userType)) {
+                fetch("/userType")
+                    .then((res) => res.json())
+                    .then((data) => {
+                        if (data.authorized) {
+                            $("#userDropDown").show();
+                            $("#branchDropDown").show();
+
+                        } else
+                            console.error("Don't touch my cookies!");
+                    })
+                    .catch((error) => {
+                        console.error("Failed to connect to server");
+                    });
+
+            }
+        }
+
+        function getCookie(name) {
+            var nameEQ = name + "=";
+            var ca = document.cookie.split(";");
+            for (var i = 0; i < ca.length; i++) {
+                var c = ca[i];
+                while (c.charAt(0) == " ") c = c.substring(1, c.length);
+                if (c.indexOf(nameEQ) == 0)
+                    return c.substring(nameEQ.length, c.length);
+            }
+            return null;
+        }
+        check_user();
+    </script>

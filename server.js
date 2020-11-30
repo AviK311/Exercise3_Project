@@ -2,15 +2,15 @@ let path = require("path");
 let express = require("express");
 const { BADFLAGS } = require("dns");
 const app = express();
-const users = require("./jsons/users").users;
-const flowers = require("./jsons/flowers").flowers;
 const bodyParser = require('body-parser');
-
 app.use(bodyParser.urlencoded({
     extended: true
 }));
-
 app.use(bodyParser.json());
+
+const users = require("./jsons/users").users;
+const flowers = require("./jsons/flowers").flowers;
+const branches = require("./jsons/branches").branches;
 
 
 var password_attempts = 0;
@@ -34,9 +34,17 @@ app.get("/about", function(req, res) {
 app.get("/flowers", function(req, res) {
     res.render("partials/flowerList", { flowers: flowers });
 });
+app.get("/branches", function(req, res) {
+    console.log(currentUser);
+    if (!isAuthorized(currentUser)) {
+        res.send("You are unauthorized to view this content")
+        return;
+    }
+    res.render("partials/branchList", { branches: branches });
+});
 app.get("/users", function(req, res) {
     console.log(currentUser);
-    if (currentUser == null || (currentUser.userType != "manager" && currentUser.userType != "Developer")) {
+    if (!isAuthorized(currentUser)) {
         res.send("You are unauthorized to view this content")
         return;
     }
@@ -64,10 +72,6 @@ app.post("/authenticate", function(req, res) {
             user: user,
             authority: isAuthorized(user)
         }
-        if (jsonToSend.authority) {
-            jsonToSend.addedOptions = "users";
-        }
-        console.log(jsonToSend);
         res.json(jsonToSend);
         currentUser = user;
 
@@ -82,6 +86,9 @@ app.get("/logout", (req, res) => {
     setCookies(res, { fname: '', lname: '', email: '' });
     res.json({ success: true });
 });
+app.get("/userType", (req, res) => {
+    res.json({ authorized: isAuthorized(currentUser) });
+});
 
 app.listen(8071, function() {
     console.log("running express server on 8071");
@@ -91,6 +98,7 @@ function setCookies(res, user) {
     res.cookie("fname", user.fname);
     res.cookie("lname", user.lname);
     res.cookie("email", user.email);
+    res.cookie("userType", user.userType);
 }
 
 function validateEmail(email) {
