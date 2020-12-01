@@ -26,9 +26,18 @@ app.use(express.static(path.join(__dirname, "public")));
 app.get("/", function(req, res) {
     res.render("index");
 });
+app.get("/home", function(req, res) {
+    res.render("partials/home");
+});
 
 app.get("/about", function(req, res) {
-    res.render("about");
+    res.render("partials/about");
+});
+app.get("/contact", function(req, res) {
+    res.render("partials/contact");
+});
+app.get("/careers", function(req, res) {
+    res.send("ABSOLUTELY NONE");
 });
 
 app.get("/flowers", function(req, res) {
