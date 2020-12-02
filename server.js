@@ -1,5 +1,6 @@
 let path = require("path");
 let express = require("express");
+var fs = require('fs');
 const { BADFLAGS } = require("dns");
 const app = express();
 const bodyParser = require('body-parser');
@@ -8,10 +9,9 @@ app.use(bodyParser.urlencoded({
 }));
 app.use(bodyParser.json());
 
-const users = require("./jsons/users").users;
-const flowers = require("./jsons/flowers").flowers;
-const branches = require("./jsons/branches").branches;
-
+var users = require("./jsons/users");
+const flowers = require("./jsons/flowers");
+var branches = require("./jsons/branches");
 
 var password_attempts = 0;
 
@@ -30,6 +30,21 @@ app.get("/home", function(req, res) {
     res.render("partials/home");
 });
 
+app.delete("/deleteUser", function(req, res) {
+    console.log(currentUser);
+    if (!isAuthorizedBranches(currentUser)) {
+        res.json({ success: false, message: "You are unauthorized" });
+        return;
+    }
+    users = users.filter(u => u.email != req.body.email);
+    fs.writeFile('./jsons/users.json', JSON.stringify(users, null, 4), function(err) {
+        console.log(err);
+    });
+    res.json({ success: true, message: "User was deleted" });
+
+
+});
+
 app.get("/about", function(req, res) {
     res.render("partials/about");
 });
@@ -45,7 +60,7 @@ app.get("/flowers", function(req, res) {
 });
 app.get("/branches", function(req, res) {
     console.log(currentUser);
-    if (!isAuthorized(currentUser)) {
+    if (!isAuthorizedBranches(currentUser)) {
         res.send("You are unauthorized to view this content")
         return;
     }
@@ -53,11 +68,42 @@ app.get("/branches", function(req, res) {
 });
 app.get("/users", function(req, res) {
     console.log(currentUser);
-    if (!isAuthorized(currentUser)) {
+    if (!isAuthorizedUsers(currentUser)) {
         res.send("You are unauthorized to view this content")
         return;
     }
-    res.render("partials/userList", { users: users });
+    res.render("partials/userList", { users: users, withPassword: currentUser.userType != "employee" });
+});
+
+app.post("/createCustomer", function(req, res) {
+    let body = req.body;
+    console.log(body);
+    if (!validateEmail(body.email)) {
+        res.json({ success: false, message: "Email is invalid" });
+        return;
+
+    }
+    if (users.some(u => u.email == body.email)) {
+        res.json({ success: false, message: "A user with that email exists" });
+        return;
+    }
+    newUser = {
+        fname: body.fname,
+        lname: body.lname,
+        email: body.email,
+        userType: "customer",
+        "password": body.password,
+        "Branch": null,
+        ID: users.reduce((prev, current) => (prev.ID > current.ID) ? prev : current).ID + 1
+    };
+    users.push(newUser);
+    fs.writeFile('./jsons/users.json', JSON.stringify(users, null, 4), function(err) {
+        console.log(err);
+    });
+    res.json({ success: true, message: "User was created" });
+
+
+
 });
 app.post("/authenticate", function(req, res) {
     let body = req.body;
@@ -79,7 +125,8 @@ app.post("/authenticate", function(req, res) {
         let jsonToSend = {
             success: true,
             user: user,
-            authority: isAuthorized(user)
+            authorityBranch: isAuthorizedBranches(user),
+            authorityUsers: isAuthorizedUsers(user)
         }
         res.json(jsonToSend);
         currentUser = user;
@@ -96,7 +143,8 @@ app.get("/logout", (req, res) => {
     res.json({ success: true });
 });
 app.get("/userType", (req, res) => {
-    res.json({ authorized: isAuthorized(currentUser) });
+    console.log(currentUser);
+    res.json({ branch: isAuthorizedBranches(currentUser), user: isAuthorizedUsers(currentUser) });
 });
 
 app.listen(8071, function() {
@@ -115,7 +163,15 @@ function validateEmail(email) {
     return re.test(email);
 }
 
-function isAuthorized(user) {
+function isAuthorizedUsers(user) {
+    if (user == null) return false;
+    if (user.userType == "Developer" ||
+        user.userType == "manager" ||
+        user.userType == "employee") return true;
+    return false;
+}
+
+function isAuthorizedBranches(user) {
     if (user == null) return false;
     if (user.userType == "Developer" || user.userType == "manager") return true;
     return false;

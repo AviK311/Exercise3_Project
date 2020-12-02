@@ -1,5 +1,5 @@
 <nav class="navbar navbar-expand-lg navbar-light bg-warning">
-    <a class="navbar-brand" href="#"><img src="/images/logos/head.ico" class="nav-logo" /></a>
+    <a class="navbar-brand"><img src="/images/logos/yellow_flower.png" class="nav-logo" /></a>
     <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNavDropdown" aria-controls="navbarNavDropdown" aria-expanded="false" aria-label="Toggle navigation">
         <span class="navbar-toggler-icon"></span>
     </button>
@@ -51,7 +51,7 @@
                     >
                 </div>
                 <li class="nav-item">
-                <div id="welcomeNote" class="nav-link">
+                <div id="welcomeNote" class="nav-link fancy" style="font-size: 20px;">
                     Welcome
                 </div>
                 </li>
@@ -101,7 +101,7 @@
                         <input type="checkbox" />
                         Remember me
                     </label>
-        <button class="btn btn-primary bg-warning" onclick="get_user()">
+        <button class="btn btn-warning" onclick="get_user()">
                         Login
                     </button>
     </div>
@@ -122,10 +122,10 @@
                     </div>
                     <div class="modal-body">Are you sure you want to log out?</div>
                     <div class="modal-footer justify-content-between">
-                        <button class="btn btn-primary bg-warning" onclick="logout()">
+                        <button class="btn btn-warning" onclick="logout()">
                         Yes
                     </button>
-                        <button class="btn btn-primary bg-warning" data-dismiss="modal">
+                        <button class="btn btn-warning" data-dismiss="modal">
                         No
                     </button>
                     </div>
@@ -134,10 +134,19 @@
         </div>
     </div>
     <script>
-        function isAuthorized(userType) {
+        function isAuthorizedBranch(userType) {
             return (
                 userType == "Developer" ||
                 userType == "manager"
+            );
+
+        }
+
+        function isAuthorizedUsers(userType) {
+            return (
+                userType == "Developer" ||
+                userType == "manager" ||
+                userType == "employee"
             );
 
         }
@@ -163,10 +172,8 @@
                         $("#logout_btn").show();
                         $("#welcomeNote").text(`Welcome, ${data.user.fname} ${data.user.lname}`);
 
-                        if (isAuthorized(data.user.userType)) {
-                            $("#userDropDown").show();
-                            $("#branchDropDown").show();
-                        }
+                        $("#userDropDown").toggle(isAuthorizedUsers(data.user.userType));
+                        $("#branchDropDown").toggle(isAuthorizedBranch(data.user.userType));
                     } else {
                         console.log("Error:", data.message);
                     }
@@ -186,6 +193,9 @@
                         $("#logoutModal").modal("toggle");
                         $("#login_btn").show();
                         $("#logout_btn").hide();
+                        $("#userDropDown").hide();
+                        $("#branchDropDown").hide();
+                        $("#main").load("/home");
                     }
                 })
                 .catch((error) => {
@@ -203,16 +213,14 @@
             let lname = getCookie("lname");
             $("#welcomeNote").text(`Welcome, ${fname} ${lname}`);
             let userType = getCookie("userType");
-            if (isAuthorized(userType)) {
+            if (isAuthorizedUsers(userType)) {
                 fetch("/userType")
                     .then((res) => res.json())
                     .then((data) => {
-                        if (data.authorized) {
-                            $("#userDropDown").show();
-                            $("#branchDropDown").show();
+                        $("#userDropDown").toggle(data.user);
+                        $("#branchDropDown").toggle(data.branch);
+                        console.log(data);
 
-                        } else
-                            console.error("Don't touch my cookies!");
                     })
                     .catch((error) => {
                         console.error("Failed to connect to server");

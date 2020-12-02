@@ -1,5 +1,24 @@
 ol li {
-  background: #ffe5e5;
-  padding: 5px;
-  margin-left: 35px;
+    background: #ffe5e5;
+    padding: 5px;
+    margin-left: 35px;
+}
+
+.parallax {
+    /* The image used */
+    background-image: url("/images/Wallpapers/Home Wallpaper.jpg");
+    /* Set a specific height */
+    min-height: 500px;
+    /* Create the parallax scrolling effect */
+    background-attachment: fixed;
+    background-position: center;
+    background-repeat: no-repeat;
+    background-size: cover;
+}
+
+.fancy {
+    font-family: 'Great Vibes';
+    font-size: 30px;
+    /* font: 400 130px/0.8 'Great Vibes', Helvetica, sans-serif; */
+    text-shadow: 4px 4px 3px rgba(0, 0, 0, 0.1);
 }

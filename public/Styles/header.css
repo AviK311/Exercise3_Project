@@ -62,14 +62,8 @@
   
   .modal-login .btn {
       min-width: 100px;
-      background: #3498db;
       border: none;
       line-height: normal;
-  }
-  
-  .modal-login .btn:hover,
-  .modal-login .btn:focus {
-      background: #248bd0;
   }
   
   .modal-login .hint-text a {
@@ -82,5 +76,10 @@
   }
   
   .nav-logo {
-      width: 40px;
+      width: 60px;
+      filter: drop-shadow(1px 1px 0 black) drop-shadow(-1px -1px 0 black);
+  }
+  
+  .navbar {
+      border-radius: 0 0 15px 15px;
   }
