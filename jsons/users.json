@@ -21,7 +21,7 @@
         "fname": "Susan",
         "lname": "Vinson",
         "email": "Susan_Vinson@BestBudsForever.org",
-        "userType": "employee",
+        "userType": "manager",
         "password": "o8mrsqZtxN",
         "Branch": 1,
         "ID": 2
@@ -97,5 +97,59 @@
         "password": "Yy2fOwunTc",
         "Branch": 2,
         "ID": 10
+    },
+    {
+        "fname": "Sapir",
+        "lname": "Koenigsberg",
+        "email": "barabi6@gmail.com",
+        "userType": "customer",
+        "password": "8452002",
+        "Branch": null,
+        "ID": 11
+    },
+    {
+        "fname": "Sapir",
+        "lname": "Koenigsberg",
+        "email": "barabi@gmail.com",
+        "userType": "customer",
+        "password": "84",
+        "Branch": null,
+        "ID": 12
+    },
+    {
+        "fname": "Sapir",
+        "lname": "s",
+        "email": "barabi@gmail.co",
+        "userType": "customer",
+        "password": "J",
+        "Branch": null,
+        "ID": 13
+    },
+    {
+        "fname": "Ba",
+        "lname": "ra",
+        "email": "aaaaa@aaa.ccc",
+        "userType": "customer",
+        "password": "12",
+        "Branch": null,
+        "ID": 14
+    },
+    {
+        "fname": "ba",
+        "lname": "rabi",
+        "email": "aaa@bbb.ccc",
+        "userType": "customer",
+        "password": "J",
+        "Branch": null,
+        "ID": 15
+    },
+    {
+        "fname": "Ba",
+        "lname": "RA",
+        "email": "abkoen@gm.com",
+        "userType": "customer",
+        "password": "111",
+        "Branch": null,
+        "ID": 16
     }
 ]

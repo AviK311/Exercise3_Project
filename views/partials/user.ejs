@@ -19,7 +19,11 @@
             </li>
             <li class="list-group-item">
                 <button class="btn btn-warning" data-toggle="modal" data-target="#deleteUserModal" onclick="prepareDelete('<%- user.fname + ' ' + user.lname%>','<%- user.email%>')">Delete</button>
+                <%if(user.userType == "employee"){%>
+                    <button class="btn btn-warning" data-toggle="modal" data-target="#promoteModal" onclick="preparePromote('<%- user.fname + ' ' + user.lname%>','<%- user.email%>')">Promote</button>
+                    <%}%>
             </li>
+
             <% } %>
     </ul>
 </div>
