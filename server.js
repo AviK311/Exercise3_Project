@@ -7,15 +7,22 @@ const bodyParser = require('body-parser');
 app.use(bodyParser.urlencoded({
     extended: true
 }));
+
+//session
+const session = require("express-session");
+app.use(session({ secret: "poo" }));
 app.use(bodyParser.json());
 var users = require("./jsons/users");
 const flowers = require("./jsons/flowers");
 var branches = require("./jsons/branches");
+const { sha256 } = require("js-sha256");
+
+
+
 
 var password_attempts = 0;
 
-var currentUser = null;
-
+const currentSessions = {};
 // set the view engine to ejs
 app.set("view engine", "ejs");
 
@@ -25,10 +32,13 @@ app.get("/", function(req, res) {
     res.render("index");
 });
 app.get("/home", function(req, res) {
+    console.log(currentSessions);
+    console.log(req.session.hash);
     res.render("partials/home");
 });
 
 app.delete("/deleteUser", function(req, res) {
+    let currentUser = currentSessions[req.session.hash]
     console.log(currentUser);
     if (getAuthLevel(currentUser) < 2) {
         res.json({ success: false, message: "You are unauthorized to delete users" });
@@ -44,6 +54,7 @@ app.delete("/deleteUser", function(req, res) {
 });
 
 app.post("/promoteUser", function(req, res) {
+    let currentUser = currentSessions[req.session.hash]
     console.log(currentUser);
     if (getAuthLevel(currentUser) < 2) {
         res.json({ success: false, message: "You are unauthorized to promote employees" });
@@ -75,6 +86,7 @@ app.get("/flowers", function(req, res) {
     res.render("partials/flowerList", { flowers: flowers });
 });
 app.get("/branches", function(req, res) {
+    let currentUser = currentSessions[req.session.hash];
     console.log(currentUser);
     if (getAuthLevel(currentUser) < 2) {
         res.send("You are unauthorized to view this content")
@@ -83,6 +95,7 @@ app.get("/branches", function(req, res) {
     res.render("partials/branchList", { branches: branches });
 });
 app.get("/users", function(req, res) {
+    let currentUser = currentSessions[req.session.hash];
     console.log(currentUser);
     if (getAuthLevel(currentUser) < 1) {
         res.send("You are unauthorized to view this content")
@@ -120,7 +133,7 @@ app.post("/createCustomer", function(req, res) {
 });
 app.post("/createEmployee", function(req, res) {
     let body = req.body;
-    if (getAuthLevel(currentUser) < 2) {
+    if (getAuthLevel(currentSessions[req.session.hash]) < 2) {
         res.json({ success: false, message: "You are unauthorized to create Employees" });
         return;
     }
@@ -143,16 +156,13 @@ app.post("/createEmployee", function(req, res) {
         lname: body.lname,
         email: body.email,
         salary: salary,
-        userType: "customer",
+        userType: "employee",
         "password": body.password,
         "Branch": body.branch,
         ID: users.reduce((prev, current) => (prev.ID > current.ID) ? prev : current).ID + 1
     };
     addUser(newUser);
     res.json({ success: true, message: "User was created" });
-
-
-
 });
 app.post("/authenticate", function(req, res) {
     let body = req.body;
@@ -177,10 +187,11 @@ app.post("/authenticate", function(req, res) {
             authorityBranch: getAuthLevel(user) >= 2,
             authorityUsers: getAuthLevel(user) >= 1
         }
+        let newHash = createSessionHash(user);
+        req.session.hash = newHash;
+        currentSessions[newHash] = user;
         res.json(jsonToSend);
-        // newHash = createSessionHash(user);
-        // req.session.hash = newHash;
-        currentUser = user;
+
 
     } else {
         res.json({ success: false, message: "Wrong Password" });
@@ -189,13 +200,20 @@ app.post("/authenticate", function(req, res) {
 });
 
 app.get("/logout", (req, res) => {
-    currentUser = null;
+    delete currentSessions[req.session.hash];
+    req.session.destroy((err) => {
+        if (err) {
+            return console.log(err);
+        }
+
+    });
     setCookies(res, { fname: '', lname: '', email: '' });
     res.json({ success: true });
+
 });
 app.get("/userType", (req, res) => {
-    console.log(currentUser);
-    res.json({ branch: getAuthLevel(currentUser) >= 2, user: getAuthLevel(currentUser) >= 1 });
+    console.log(currentSessions[req.session.hash]);
+    res.json({ branch: getAuthLevel(currentSessions[req.session.hash]) >= 2, user: getAuthLevel(currentSessions[req.session.hash]) >= 1 });
 });
 
 app.listen(8071, function() {
@@ -237,7 +255,7 @@ function getUserBy(field, value) {
     return user[0];
 }
 
-// function createSessionHash(user) {
-//     var hash = sha256.hmac(Date.now().toString(), user.fname + user.lname);
-//     return hash;
-// }
+function createSessionHash(user) {
+    var hash = sha256.hmac(Date.now().toString(), user.fname + user.lname);
+    return hash;
+}
