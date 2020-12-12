@@ -1,0 +1,25 @@
+<div class="card" style="width: 18rem; ">
+    <ul class="list-group list-group-flush">
+        <li class="list-group-item">
+            Name:
+            <%- user.fname + " " + user.lname%>
+        </li>
+        <li class="list-group-item">Email:
+            <%-user.email%>
+        </li>
+        <li class="list-group-item">User Type:
+            <%-user.userType%>
+        </li>
+        <li class="list-group-item">Branch:
+            <%-user.Branch%>
+        </li>
+        <% if(withPassword){%>
+            <li class="list-group-item">Password:
+                <%-user.password%>
+            </li>
+            <li class="list-group-item">
+                <button class="btn btn-warning" data-toggle="modal" data-target="#deleteUserModal" onclick="prepareDelete('<%- user.fname + ' ' + user.lname%>','<%- user.email%>')">Delete</button>
+            </li>
+            <% } %>
+    </ul>
+</div>

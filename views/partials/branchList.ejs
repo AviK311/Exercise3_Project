@@ -1,0 +1,8 @@
+<ul style="list-style-type: none; overflow: hidden; padding-top: 30px;">
+
+    <% branches.forEach(branch=>{ %>
+        <il class="col-md-4" style="float: left; padding-bottom: 15px; padding-right: 15px;">
+            <%- include('./branch', {branch: branch}); %>
+        </il>
+        <% }); %>
+</ul>

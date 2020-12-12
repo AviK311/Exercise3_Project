@@ -1,0 +1,32 @@
+<div class="card" style="width: 18rem;">
+    <img class="card-img-top" src=<%-flower.img%> alt="Card image cap">
+    <div class="card-body">
+        <h5 class="card-title">
+            <%-flower.name%>
+        </h5>
+        <p class="card-text">Price
+            <%-flower.price%>
+        </p>
+    </div>
+
+    <div class="card-body ">
+        <div style="flex:1;"><a class="nav-link dropdown-toggle" href="#" id=<%-flower.name.replace( ' ', '-') + "dropDownMenu"%> data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"> Colors
+            </a>
+            <div class="dropdown-menu" aria-labelledby=<%-flower.name + "dropDownMenu"%>>
+                <% flower.color.forEach(color=>{ %>
+                    <a class="dropdown-item" onclick="$('#'+$(this).parent().attr('aria-labelledby')).text($(this).html());">
+                        <%-color[0].toUpperCase() +
+                        color.slice(1);%>
+                    </a>
+                    <% }); %>
+
+            </div>
+            Amount:<input class="form-control" type="number" value="1" min='1'>
+            <button class="btn btn-warning">Add to Cart</button>
+
+        </div>
+
+
+
+    </div>
+</div>
