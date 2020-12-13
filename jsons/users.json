@@ -115,41 +115,5 @@
         "password": "84",
         "Branch": null,
         "ID": 12
-    },
-    {
-        "fname": "Sapir",
-        "lname": "s",
-        "email": "barabi@gmail.co",
-        "userType": "customer",
-        "password": "J",
-        "Branch": null,
-        "ID": 13
-    },
-    {
-        "fname": "Ba",
-        "lname": "ra",
-        "email": "aaaaa@aaa.ccc",
-        "userType": "customer",
-        "password": "12",
-        "Branch": null,
-        "ID": 14
-    },
-    {
-        "fname": "ba",
-        "lname": "rabi",
-        "email": "aaa@bbb.ccc",
-        "userType": "customer",
-        "password": "J",
-        "Branch": null,
-        "ID": 15
-    },
-    {
-        "fname": "Ba",
-        "lname": "RA",
-        "email": "abkoen@gm.com",
-        "userType": "customer",
-        "password": "111",
-        "Branch": null,
-        "ID": 16
     }
 ]

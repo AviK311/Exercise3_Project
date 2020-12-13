@@ -15,7 +15,6 @@ app.use(bodyParser.json());
 var users = require("./jsons/users");
 const flowers = require("./jsons/flowers");
 var branches = require("./jsons/branches");
-const { sha256 } = require("js-sha256");
 
 
 
