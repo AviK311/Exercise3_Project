@@ -87,11 +87,7 @@ app.get("/flowers", function(req, res) {
 app.get("/branches", function(req, res) {
     let currentUser = getUserBy("ID", currentSessions[req.sessionID]);
     console.log(currentUser);
-    if (getAuthLevel(currentUser) < 2) {
-        res.send("You are unauthorized to view this content")
-        return;
-    }
-    res.render("partials/branchList", { branches: branches });
+    res.render("partials/branchList", { branches: branches.filter(b => b.active), isAuth: getAuthLevel(currentUser) >= 2 });
 });
 app.get("/users", function(req, res) {
     let currentUser = getUserBy("ID", currentSessions[req.sessionID]);
@@ -154,15 +150,42 @@ app.post("/createEmployee", function(req, res) {
         fname: body.fname,
         lname: body.lname,
         email: body.email,
-        salary: salary,
+        salary: body.salary,
         userType: "customer",
-        "password": body.password,
-        "Branch": body.branch,
+        password: body.password,
+        Branch: body.branch,
         ID: users.reduce((prev, current) => (prev.ID > current.ID) ? prev : current).ID + 1
     };
     addUser(newUser);
     res.json({ success: true, message: "User was created" });
 
+
+
+});
+
+app.post("/createBranch", function(req, res) {
+    let body = req.body;
+    if (getAuthLevel(currentSessions[req.sessionID]) < 2) {
+        res.json({ success: false, message: "You are unauthorized to create Branches" });
+        return;
+    }
+    console.log(body);
+
+    if (branches.some(b => b.name == body.name)) {
+        res.json({ success: false, message: "A branch with that name exists" });
+        return;
+    }
+    newBranch = {
+        name: body.name,
+        ID: branches.reduce((prev, current) => (prev.ID > current.ID) ? prev : current).ID + 1,
+        address: body.address,
+        active: true
+    };
+    branches.push(newBranch);
+    fs.writeFile('./jsons/branches.json', JSON.stringify(branches, null, 4), function(err) {
+        console.log(err);
+    });
+    res.json({ success: true, message: "Branch was created" });
 
 
 });
@@ -186,8 +209,7 @@ app.post("/authenticate", function(req, res) {
         let jsonToSend = {
             success: true,
             user: user,
-            authorityBranch: getAuthLevel(user) >= 2,
-            authorityUsers: getAuthLevel(user) >= 1
+            isAuth: getAuthLevel(user) >= 1
         }
         currentSessions[req.sessionID] = user.ID;
         res.json(jsonToSend);
@@ -214,7 +236,7 @@ app.get("/logout", (req, res) => {
 app.get("/userType", (req, res) => {
     currentUser = getUserBy("ID", currentSessions[req.sessionID])
     console.log(currentUser);
-    res.json({ branch: getAuthLevel(currentUser) >= 2, user: getAuthLevel(currentUser) >= 1 });
+    res.json({ isAuth: getAuthLevel(currentUser) >= 1 });
 });
 
 app.listen(8071, function() {
@@ -248,7 +270,7 @@ function getAuthLevel(user) {
         "employee": 1,
         "customer": 0
     };
-    return authLevels[user.userType];
+    return user ? authLevels[user.userType] : 0;
 }
 
 function getUserBy(field, value) {

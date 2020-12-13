@@ -2,7 +2,71 @@
 
     <% branches.forEach(branch=>{ %>
         <il class="col-md-4" style="float: left; padding-bottom: 15px; padding-right: 15px;">
-            <%- include('./branch', {branch: branch}); %>
+            <%- include('./branch', {branch: branch, isAuth: isAuth}); %>
         </il>
         <% }); %>
 </ul>
+<% if (isAuth){%>
+    <div style="margin-bottom: 10px;">
+        <button class="btn btn-warning" data-toggle="modal" data-target="#addBranchModal">Add Branch</button>
+        <button class="btn btn-warning" onclick="$('#main').load('branches');">Refresh Page</button>
+    </div>
+
+    <div id="addBranchModal" class="modal fade">
+        <div class="modal-dialog modal-login">
+            <div class="modal-content">
+                <form action="javascript:void(0);">
+                    <div class="modal-header">
+                        <h4 class="modal-title">New Branch</h4>
+                        <button type="button" class="close" data-dismiss="modal" aria-hidden="true">
+                            &times;
+                        </button>
+                    </div>
+                    <div class="modal-body">
+                        <div class="form-group">
+                            <label>Name</label>
+                            <input type="text" id="nameAddBranch" class="form-control" required="required" />
+                        </div>
+                        <div class="form-group">
+                            <label>Address</label>
+                            <input type="text" id="addressAddBranch" class="form-control" required="required" />
+                        </div>
+                    </div>
+                    <div class="modal-footer justify-content-between">
+                        <button class="btn btn-warning" onclick="createBranch()">
+                            Create
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+    <%}%>
+        <script>
+            async function createBranch() {
+                let name = $(nameAddBranch).val();
+                let address = $(addressAddBranch).val();
+
+                fetch("/createBranch", {
+                        method: "POST",
+                        headers: {
+                            "Content-Type": "application/json",
+                        },
+                        body: JSON.stringify({
+                            name: name,
+                            address: address,
+                        }),
+                    })
+                    .then((res) => res.json())
+                    .then((data) => {
+                        if (data.success) {
+                            $("#addBranchModal").modal("toggle");
+                            $(".form-group input").val('');
+                        }
+
+                    })
+                    .catch((error) => {
+                        console.error("Failed to connect to server");
+                    });
+            }
+        </script>

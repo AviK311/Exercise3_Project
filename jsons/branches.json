@@ -1,4 +1,5 @@
-[{
+[
+    {
         "name": "Tel Aviv",
         "ID": 1,
         "address": "Shlomo Ibn Gabirol St 70",
@@ -8,6 +9,12 @@
         "name": "Jerusalem",
         "ID": 2,
         "address": "David Remez St 4",
+        "active": true
+    },
+    {
+        "name": "Mevaseret",
+        "ID": 3,
+        "address": "Mevo Tirosh 5",
         "active": true
     }
 ]

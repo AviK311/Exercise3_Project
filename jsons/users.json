@@ -115,5 +115,15 @@
         "password": "84",
         "Branch": null,
         "ID": 12
+    },
+    {
+        "fname": "Jake",
+        "lname": "Tyler",
+        "email": "Jake@best_buds_forever.co.il",
+        "salary": "3",
+        "userType": "customer",
+        "password": "J",
+        "Branch": "1",
+        "ID": 13
     }
 ]

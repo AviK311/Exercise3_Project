@@ -1,4 +1,4 @@
-<div class="card" style="width: 18rem; ">
+<div class="card user" style="width: 18rem; ">
     <ul class="list-group list-group-flush">
         <li class="list-group-item">
             Name:
@@ -14,16 +14,23 @@
             <%-user.Branch%>
         </li>
         <% if(withPassword){%>
-            <li class="list-group-item">Password:
-                <%-user.password%>
-            </li>
-            <li class="list-group-item">
-                <button class="btn btn-warning" data-toggle="modal" data-target="#deleteUserModal" onclick="prepareDelete('<%- user.fname + ' ' + user.lname%>','<%- user.email%>')">Delete</button>
-                <%if(user.userType == "employee"){%>
-                    <button class="btn btn-warning" data-toggle="modal" data-target="#promoteModal" onclick="preparePromote('<%- user.fname + ' ' + user.lname%>','<%- user.email%>')">Promote</button>
-                    <%}%>
-            </li>
+            <% if(user.salary){%>
+                <li class="list-group-item">Salary:
+                    <%-user.salary%>
+                </li>
+                <%}%>
 
-            <% } %>
+                    <li class="list-group-item">Password:
+                        <%-user.password%>
+                    </li>
+
+                    <li class="list-group-item">
+                        <button class="btn btn-warning" data-toggle="modal" data-target="#deleteUserModal" onclick="prepareDelete('<%- user.fname + ' ' + user.lname%>','<%- user.email%>')">Delete</button>
+                        <%if(user.userType == "employee"){%>
+                            <button class="btn btn-warning" data-toggle="modal" data-target="#promoteModal" onclick="preparePromote('<%- user.fname + ' ' + user.lname%>','<%- user.email%>')">Promote</button>
+                            <%}%>
+                    </li>
+
+                    <% } %>
     </ul>
 </div>
