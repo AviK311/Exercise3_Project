@@ -11,7 +11,7 @@
     <% if(withPassword){%>
         <button class="btn btn-warning" data-toggle="modal" data-target="#addEmployeeModal">Add Employee</button>
         <%}%>
-            <button class="btn btn-warning" onclick="$('#main').load('users');">Refresh Page</button>
+            <button class="btn btn-warning" onclick="mainLoad('users');">Refresh Page</button>
 </div>
 
 <div id="deleteUserModal" class="modal fade">
@@ -114,6 +114,7 @@
     <%}%>
         <script>
             async function deleteUser(event) {
+                loading(true);
                 fetch("/deleteUser", {
                         method: "DELETE",
                         headers: {
@@ -125,6 +126,7 @@
                     })
                     .then((res) => res.json())
                     .then((data) => {
+                        loading(false);
                         if (data.success) {
                             $("#deleteUserModal").modal("toggle");
                         }
@@ -141,6 +143,7 @@
                 }, deleteUser);
             }
             async function promoteUser(event) {
+                loading(true);
                 fetch("/promoteUser", {
                         method: "POST",
                         headers: {
@@ -152,6 +155,7 @@
                     })
                     .then((res) => res.json())
                     .then((data) => {
+                        loading(false);
                         if (data.success) {
                             $("#promoteModal").modal("toggle");
                         }
@@ -177,7 +181,7 @@
                 let email = $(emailAddEmployee).val();
                 let salary = $(salaryAddEmployee).val();
                 let branch = $(branchAddEmployee).val();
-
+                loading(true);
                 fetch("/createEmployee", {
                         method: "POST",
                         headers: {
@@ -194,6 +198,7 @@
                     })
                     .then((res) => res.json())
                     .then((data) => {
+                        loading(false);
                         if (data.success) {
                             $("#addEmployeeModal").modal("toggle");
                             $(".form-group input").val('');

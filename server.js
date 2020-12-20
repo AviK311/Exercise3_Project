@@ -1,24 +1,33 @@
 let path = require("path");
 let express = require("express");
-var fs = require('fs');
-const { BADFLAGS } = require("dns");
 const app = express();
 const bodyParser = require('body-parser');
-app.use(bodyParser.urlencoded({
-    extended: true
-}));
+var fs = require('fs');
+
+
 
 //session
 const session = require("express-session");
-app.use(session({ secret: "poo" }));
+
+
+
+//use
 app.use(bodyParser.json());
+app.use(bodyParser.urlencoded({
+    extended: true
+}));
+//for delayed rsp
+app.use(function(req, res, next) { setTimeout(next, 1000) });
+
+app.use(session({ secret: "poo" }));
+
+
+//data
 var users = require("./jsons/users");
 const flowers = require("./jsons/flowers");
 var branches = require("./jsons/branches");
 
-
-
-
+//not implemented yet
 var password_attempts = 0;
 
 const currentSessions = {};
@@ -252,10 +261,13 @@ function addUser(newUser) {
 }
 
 function setCookies(res, user) {
-    res.cookie("fname", user.fname);
-    res.cookie("lname", user.lname);
-    res.cookie("email", user.email);
-    res.cookie("userType", user.userType);
+    let options = {
+        maxAge: 1000 * 60 * 60 * 6, //6 hours
+    }
+    res.cookie("fname", user.fname, options);
+    res.cookie("lname", user.lname, options);
+    res.cookie("email", user.email, options);
+    res.cookie("userType", user.userType, options);
 }
 
 function validateEmail(email) {

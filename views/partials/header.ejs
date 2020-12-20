@@ -4,12 +4,12 @@
         <span class="navbar-toggler-icon"></span>
     </button>
     <div class="collapse navbar-collapse" id="navbarNavDropdown">
-        <ul class="navbar-nav">
+        <ul class="navbar-nav mr-auto">
             <li class="nav-item active">
-                <span style="cursor: pointer;" class="nav-link" onclick="$('#main').load('/home'); activate(this);">Home</span>
+                <span style="cursor: pointer;" class="nav-link" onclick="mainLoad('/home'); activate(this);">Home</span>
             </li>
             <li class="nav-item">
-                <span style="cursor: pointer;" class="nav-link" onclick="$('#main').load('about'); activate(this);">About</span>
+                <span style="cursor: pointer;" class="nav-link" onclick="mainLoad('about'); activate(this);">About</span>
             </li>
             <li id="loginbtn" class="nav-item for-login">
                 <a class="nav-link" href="#loginModal" data-toggle="modal">Login</a
@@ -38,19 +38,19 @@
                     Navigate
                 </a>
                 <div id="navbarDropDown" class="dropdown-menu" aria-labelledby="navbarDropdownMenuLink">
-                    <a class="dropdown-item" onclick="$('#main').load('flowers');">Flowers</a
+                    <a class="dropdown-item" onclick="mainLoad('flowers');">Flowers</a
                     >
                     <a
                         id="userDropDown"
                         class="dropdown-item"
-                        onclick="$('#main').load('users');"
+                        onclick="mainLoad('users');"
                         style="display: none"
                         >Users</a
                     >
                     <a
                         id="branchDropDown"
                         class="dropdown-item"
-                        onclick="$('#main').load('branches');"
+                        onclick="mainLoad('branches');"
                         >Branches</a
                     >
                 </div>
@@ -59,8 +59,12 @@
                     Welcome
                 </div>
                 </li>
-            </li>
-        </ul>
+            </ul>
+                
+                    <div id="spinner" class="spinner-border text-dark  ml-auto" role="status">
+                        <span class="sr-only">Loading...</span>
+                    </div>
+                   
     </div>
 </nav>
 
@@ -176,7 +180,15 @@
             </div>
         </div>
     </div>
+
     <script>
+        async function mainLoad(route) {
+            loading(true);
+            $('#main').load(route, function() {
+                loading(false);
+            });
+        }
+
         function isAuthorizedUsers(userType) {
             return (
                 userType == "Developer" ||
@@ -192,6 +204,7 @@
         }
 
         async function login(email, password) {
+            loading(true);
             fetch("/authenticate", {
                     method: "POST",
                     headers: {
@@ -204,6 +217,7 @@
                 })
                 .then((res) => res.json())
                 .then((data) => {
+                    loading(false);
                     if (data.success) {
                         console.log("Login Successful");
                         $("#loginModal:visible").modal("toggle");
@@ -222,17 +236,19 @@
 
 
         async function logout() {
+            loading(true);
             fetch("/logout")
                 .then((res) => res.json())
                 .then((data) => {
                     if (data.success) {
+                        loading(false);
                         console.log("Logout Successful");
                         $("#welcomeNote").text("Welcome");
                         $("#logoutModal").modal("toggle");
                         $(".for-login").show();
                         $(".for-logout").hide();
                         $("#userDropDown").toggle(false);
-                        $("#main").load("/home");
+                        mainLoad("/home");
                     }
                 })
                 .catch((error) => {
@@ -241,6 +257,7 @@
         }
 
         async function checkUser() {
+
             let fname = getCookie("fname");
             if (fname == null || fname == "") {
                 return;
@@ -251,12 +268,13 @@
             $("#welcomeNote").text(`Welcome, ${fname} ${lname}`);
             let userType = getCookie("userType");
             if (isAuthorizedUsers(userType)) {
+                loading(true);
                 fetch("/userType")
                     .then((res) => res.json())
                     .then((data) => {
+                        loading(false);
                         $("#userDropDown").toggle(data.isAuth);
                         console.log(data);
-
                     })
                     .catch((error) => {
                         console.error("Failed to connect to server");
@@ -292,6 +310,7 @@
             let fname = $(fnameAddCustomer).val();
             let lname = $(lnameAddCustomer).val();
             let email = $(emailAddCustomer).val();
+            loading(true);
             fetch("/createCustomer", {
                     method: "POST",
                     headers: {
@@ -306,6 +325,7 @@
                 })
                 .then((res) => res.json())
                 .then((data) => {
+                    loading(false);
                     if (data.success) {
                         $("#addCustomerModal").modal("toggle");
                         $(".form-group input").val('');
@@ -318,5 +338,9 @@
                 .catch((error) => {
                     console.error("Failed to connect to server");
                 });
+        }
+
+        function loading(flag = true) {
+            $("#spinner").toggle(flag)
         }
     </script>

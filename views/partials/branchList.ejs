@@ -9,7 +9,7 @@
 <% if (isAuth){%>
     <div style="margin-bottom: 10px;">
         <button class="btn btn-warning" data-toggle="modal" data-target="#addBranchModal">Add Branch</button>
-        <button class="btn btn-warning" onclick="$('#main').load('branches');">Refresh Page</button>
+        <button class="btn btn-warning" onclick="mainLoad('branches');">Refresh Page</button>
     </div>
 
     <div id="addBranchModal" class="modal fade">
@@ -46,7 +46,7 @@
             async function createBranch() {
                 let name = $(nameAddBranch).val();
                 let address = $(addressAddBranch).val();
-
+                loading(true);
                 fetch("/createBranch", {
                         method: "POST",
                         headers: {
@@ -59,6 +59,7 @@
                     })
                     .then((res) => res.json())
                     .then((data) => {
+                        loading(false);
                         if (data.success) {
                             $("#addBranchModal").modal("toggle");
                             $(".form-group input").val('');
