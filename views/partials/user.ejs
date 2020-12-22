@@ -11,7 +11,7 @@
             <%-user.userType%>
         </li>
         <li class="list-group-item">Branch:
-            <%-user.Branch%>
+            <%-Branch%>
         </li>
         <% if(withPassword){%>
             <% if(user.salary){%>
@@ -29,6 +29,9 @@
                         <%if(user.userType == "employee"){%>
                             <button class="btn btn-warning" data-toggle="modal" data-target="#promoteModal" onclick="preparePromote('<%- user.fname + ' ' + user.lname%>','<%- user.email%>')">Promote</button>
                             <%}%>
+                                <%if(user.userType == "manager"){%>
+                                    <button class="btn btn-warning" data-toggle="modal" data-target="#demoteModal" onclick="prepareDemote('<%- user.fname + ' ' + user.lname%>','<%- user.email%>')">Demote</button>
+                                    <%}%>
                     </li>
 
                     <% } %>

@@ -2,7 +2,7 @@
 
     <% users.forEach(user=>{ %>
         <il class="col-md-4" style="float: left; padding-bottom: 15px; padding-right: 15px;">
-            <%- include('./user', {user: user, withPassword: withPassword}); %>
+            <%- include('./user', {user: user, withPassword: withPassword, Branch: Branches[user.Branch]}); %>
         </il>
         <% }); %>
 </ul>
@@ -64,6 +64,31 @@
             </div>
         </div>
     </div>
+    <div id="demoteModal" class="modal fade">
+        <div class="modal-dialog modal-login">
+            <div class="modal-content">
+                <form action="javascript:void(0);">
+                    <div class="modal-header">
+                        <h4 class="modal-title">Demote manager</h4>
+                        <button type="button" class="close" data-dismiss="modal" aria-hidden="true">
+                    &times;
+                </button>
+                    </div>
+                    <div class="modal-body" id="demoteBody">
+                    </div>
+                    <div class="modal-footer justify-content-between">
+                        <button class="btn btn-warning" id="confirmDemote">
+                    Yes
+                </button>
+                        <button class="btn btn-warning" data-dismiss="modal">
+                    No
+                </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
     <div id="addEmployeeModal" class="modal fade">
         <div class="modal-dialog modal-login">
             <div class="modal-content">
@@ -98,116 +123,152 @@
                             <input id="salaryAddEmployee" type="number" class="form-control" required="required" step="0.01" min="0" />
                         </div>
                         <div class="form-group">
-                            <label>Branch ID</label>
-                            <input id="branchAddEmployee" type="number" class="form-control" required="required" />
+                            <label>Branch</label>
+                            <select class="custom-select" id="branchAddEmployee">
+                                <%for (const ID in Branches){ %>
+                                    <option value=<%-ID%>><%-Branches[ID]%></option>
+                                 <% } %>
+                             </select>
                         </div>
-                    </div>
-                    <div class="modal-footer justify-content-between">
-                        <button class="btn btn-warning" onclick="createEmployee()">
+                        <div class="modal-footer justify-content-between">
+                            <button class="btn btn-warning" onclick="createEmployee()">
                                 Create
                             </button>
-                    </div>
+                        </div>
                 </form>
+                </div>
             </div>
         </div>
-    </div>
-    <%}%>
-        <script>
-            async function deleteUser(event) {
-                loading(true);
-                fetch("/deleteUser", {
-                        method: "DELETE",
-                        headers: {
-                            "Content-Type": "application/json",
-                        },
-                        body: JSON.stringify({
-                            email: event.data.email,
-                        }),
-                    })
-                    .then((res) => res.json())
-                    .then((data) => {
-                        loading(false);
-                        if (data.success) {
-                            $("#deleteUserModal").modal("toggle");
-                        }
-                    })
-                    .catch((error) => {
-                        console.error("Failed to connect to server");
-                    });
-            }
-
-            function prepareDelete(name, email) {
-                $('#deleteUserBody').text(`Are you sure you want to delete ${name}?`);
-                $("#confirmDelete").bind('click', {
-                    email: email
-                }, deleteUser);
-            }
-            async function promoteUser(event) {
-                loading(true);
-                fetch("/promoteUser", {
-                        method: "POST",
-                        headers: {
-                            "Content-Type": "application/json",
-                        },
-                        body: JSON.stringify({
-                            email: event.data.email,
-                        }),
-                    })
-                    .then((res) => res.json())
-                    .then((data) => {
-                        loading(false);
-                        if (data.success) {
-                            $("#promoteModal").modal("toggle");
-                        }
-                    })
-                    .catch((error) => {
-                        console.error("Failed to connect to server");
-                    });
-            }
-
-            function preparePromote(name, email) {
-                $('#promoteBody').text(`Are you sure you want to promote ${name}?`);
-                $("#confirmPromote").bind('click', {
-                    email: email
-                }, promoteUser);
-            }
-            async function createEmployee() {
-                let password = $(passwordAddEmployee).val();
-                if (password != $(passwordAddEmployeeConfirm).val()) {
-                    return;
+        <%}%>
+            <script>
+                async function deleteUser(event) {
+                    loading(true);
+                    fetch("/deleteUser", {
+                            method: "DELETE",
+                            headers: {
+                                "Content-Type": "application/json",
+                            },
+                            body: JSON.stringify({
+                                email: event.data.email,
+                            }),
+                        })
+                        .then((res) => res.json())
+                        .then((data) => {
+                            loading(false);
+                            console.log(data);
+                            if (data.success) {
+                                $("#deleteUserModal").modal("toggle");
+                            }
+                        })
+                        .catch((error) => {
+                            console.error("Failed to connect to server");
+                        });
                 }
-                let fname = $(fnameAddEmployee).val();
-                let lname = $(lnameAddEmployee).val();
-                let email = $(emailAddEmployee).val();
-                let salary = $(salaryAddEmployee).val();
-                let branch = $(branchAddEmployee).val();
-                loading(true);
-                fetch("/createEmployee", {
-                        method: "POST",
-                        headers: {
-                            "Content-Type": "application/json",
-                        },
-                        body: JSON.stringify({
-                            email: email,
-                            password: password,
-                            fname: fname,
-                            lname: lname,
-                            salary: salary,
-                            branch: branch
-                        }),
-                    })
-                    .then((res) => res.json())
-                    .then((data) => {
-                        loading(false);
-                        if (data.success) {
-                            $("#addEmployeeModal").modal("toggle");
-                            $(".form-group input").val('');
 
-                        }
+                function prepareDelete(name, email) {
+                    $('#deleteUserBody').text(`Are you sure you want to delete ${name}?`);
+                    $("#confirmDelete").bind('click', {
+                        email: email
+                    }, deleteUser);
+                }
+                async function promoteUser(event) {
+                    loading(true);
+                    fetch("/promoteUser", {
+                            method: "POST",
+                            headers: {
+                                "Content-Type": "application/json",
+                            },
+                            body: JSON.stringify({
+                                email: event.data.email,
+                            }),
+                        })
+                        .then((res) => res.json())
+                        .then((data) => {
+                            loading(false);
+                            if (data.success) {
+                                $("#promoteModal").modal("toggle");
+                            }
+                        })
+                        .catch((error) => {
+                            console.error("Failed to connect to server");
+                        });
+                }
 
-                    })
-                    .catch((error) => {
-                        console.error("Failed to connect to server");
-                    });
-            }
-        </script>
+                async function demoteUser(event) {
+                    loading(true);
+                    fetch("/demoteUser", {
+                            method: "POST",
+                            headers: {
+                                "Content-Type": "application/json",
+                            },
+                            body: JSON.stringify({
+                                email: event.data.email,
+                            }),
+                        })
+                        .then((res) => res.json())
+                        .then((data) => {
+                            loading(false);
+                            if (data.success) {
+                                $("#demoteModal").modal("toggle");
+                            }
+                        })
+                        .catch((error) => {
+                            console.error("Failed to connect to server");
+                        });
+                }
+
+
+                function preparePromote(name, email) {
+                    $('#promoteBody').text(`Are you sure you want to promote ${name}?`);
+                    $("#confirmPromote").bind('click', {
+                        email: email
+                    }, promoteUser);
+                }
+
+                function prepareDemote(name, email) {
+                    $('#demoteBody').text(`Are you sure you want to demote ${name}?`);
+                    $("#confirmDemote").bind('click', {
+                        email: email
+                    }, demoteUser);
+                }
+                async function createEmployee() {
+                    let password = $(passwordAddEmployee).val();
+                    if (password != $(passwordAddEmployeeConfirm).val()) {
+                        return;
+                    }
+                    let fname = $(fnameAddEmployee).val();
+                    let lname = $(lnameAddEmployee).val();
+                    let email = $(emailAddEmployee).val();
+                    let salary = $(salaryAddEmployee).val();
+                    let branch = $(branchAddEmployee).val();
+                    loading(true);
+                    fetch("/createEmployee", {
+                            method: "POST",
+                            headers: {
+                                "Content-Type": "application/json",
+                            },
+                            body: JSON.stringify({
+                                email: email,
+                                password: password,
+                                fname: fname,
+                                lname: lname,
+                                salary: salary,
+                                branch: branch
+                            }),
+                        })
+                        .then((res) => res.json())
+                        .then((data) => {
+                            loading(false);
+                            console.log(data);
+                            if (data.success) {
+                                $("#addEmployeeModal").modal("toggle");
+                                $(".form-group input").val('');
+
+                            }
+
+                        })
+                        .catch((error) => {
+                            console.error("Failed to connect to server");
+                        });
+                }
+            </script>

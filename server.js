@@ -16,16 +16,36 @@ app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({
     extended: true
 }));
-//for delayed rsp
-app.use(function(req, res, next) { setTimeout(next, 1000) });
 
 app.use(session({ secret: "poo" }));
+//for delayed rsp
+// const reqCounts = {};
+// app.use(function(req, res, next) {
+//     if (!(req.sessionID in reqCounts))
+//         reqCounts[req.sessionID] = 0;
+//     reqCounts[req.sessionID]++;
+//     let reqCount = reqCounts[req.sessionID];
+//     console.log("current count " + reqCount);
+//     setTimeout(function() {
+//         console.log("actual count " + reqCounts[req.sessionID]);
+//         if (reqCount == reqCounts[req.sessionID])
+//             next();
+//     }, 1000)
+
+// });
+app.use(function(req, res, next) { setTimeout(next, 1000); })
+
+
 
 
 //data
 var users = require("./jsons/users");
 const flowers = require("./jsons/flowers");
 var branches = require("./jsons/branches");
+var branchName = {};
+branches.forEach(branch => {
+    branchName[branch.ID] = branch.name;
+});
 
 //not implemented yet
 var password_attempts = 0;
@@ -40,14 +60,13 @@ app.get("/", function(req, res) {
     res.render("index");
 });
 app.get("/home", function(req, res) {
-    console.log(currentSessions);
+    console.log(req.session);
     console.log(req.sessionID);
     res.render("partials/home");
 });
 
 app.delete("/deleteUser", function(req, res) {
-    let currentUser = currentSessions[req.sessionID]
-    console.log(currentUser);
+    let currentUser = getUserBySessID(req.sessionID);
     if (getAuthLevel(currentUser) < 2) {
         res.json({ success: false, message: "You are unauthorized to delete users" });
         return;
@@ -56,13 +75,14 @@ app.delete("/deleteUser", function(req, res) {
     fs.writeFile('./jsons/users.json', JSON.stringify(users, null, 4), function(err) {
         console.log(err);
     });
+
     res.json({ success: true, message: "User was deleted" });
 
 
 });
 
 app.post("/promoteUser", function(req, res) {
-    let currentUser = currentSessions[req.sessionID]
+    let currentUser = getUserBySessID(req.sessionID);
     console.log(currentUser);
     if (getAuthLevel(currentUser) < 2) {
         res.json({ success: false, message: "You are unauthorized to promote employees" });
@@ -75,6 +95,23 @@ app.post("/promoteUser", function(req, res) {
         console.log(err);
     });
     res.json({ success: true, message: "User was promoted" });
+
+
+});
+app.post("/demoteUser", function(req, res) {
+    let currentUser = getUserBySessID(req.sessionID);
+    console.log(currentUser);
+    if (getAuthLevel(currentUser) < 2) {
+        res.json({ success: false, message: "You are unauthorized to demote employees" });
+        return;
+    }
+    userToDemote = users.findIndex(u => u.email == req.body.email);
+    users[userToPromote].userType = "employee";
+
+    fs.writeFile('./jsons/users.json', JSON.stringify(users, null, 4), function(err) {
+        console.log(err);
+    });
+    res.json({ success: true, message: "User was demoted" });
 
 
 });
@@ -94,18 +131,18 @@ app.get("/flowers", function(req, res) {
     res.render("partials/flowerList", { flowers: flowers });
 });
 app.get("/branches", function(req, res) {
-    let currentUser = getUserBy("ID", currentSessions[req.sessionID]);
+    let currentUser = getUserBySessID(req.sessionID);
     console.log(currentUser);
     res.render("partials/branchList", { branches: branches.filter(b => b.active), isAuth: getAuthLevel(currentUser) >= 2 });
 });
 app.get("/users", function(req, res) {
-    let currentUser = getUserBy("ID", currentSessions[req.sessionID]);
+    let currentUser = getUserBySessID(req.sessionID);
     console.log(currentUser);
     if (getAuthLevel(currentUser) < 1) {
         res.send("You are unauthorized to view this content")
         return;
     }
-    res.render("partials/userList", { users: users, withPassword: getAuthLevel(currentUser) >= 2 });
+    res.render("partials/userList", { users: users.filter(u => u.userType != "Developer"), Branches: branchName, withPassword: getAuthLevel(currentUser) >= 2 });
 });
 
 app.post("/createCustomer", function(req, res) {
@@ -137,7 +174,8 @@ app.post("/createCustomer", function(req, res) {
 });
 app.post("/createEmployee", function(req, res) {
     let body = req.body;
-    if (getAuthLevel(currentSessions[req.sessionID]) < 2) {
+    let currentUser = getUserBySessID(req.sessionID);
+    if (getAuthLevel(currentUser) < 2) {
         res.json({ success: false, message: "You are unauthorized to create Employees" });
         return;
     }
@@ -160,7 +198,7 @@ app.post("/createEmployee", function(req, res) {
         lname: body.lname,
         email: body.email,
         salary: body.salary,
-        userType: "customer",
+        userType: "employee",
         password: body.password,
         Branch: body.branch,
         ID: users.reduce((prev, current) => (prev.ID > current.ID) ? prev : current).ID + 1
@@ -174,7 +212,8 @@ app.post("/createEmployee", function(req, res) {
 
 app.post("/createBranch", function(req, res) {
     let body = req.body;
-    if (getAuthLevel(currentSessions[req.sessionID]) < 2) {
+    let currentUser = getUserBySessID(req.sessionID);
+    if (getAuthLevel(currentUser) < 2) {
         res.json({ success: false, message: "You are unauthorized to create Branches" });
         return;
     }
@@ -243,7 +282,7 @@ app.get("/logout", (req, res) => {
 
 });
 app.get("/userType", (req, res) => {
-    currentUser = getUserBy("ID", currentSessions[req.sessionID])
+    currentUser = getUserBySessID(req.sessionID);
     console.log(currentUser);
     res.json({ isAuth: getAuthLevel(currentUser) >= 1 });
 });
@@ -288,4 +327,8 @@ function getAuthLevel(user) {
 function getUserBy(field, value) {
     user = users.filter(u => u[field] == value);
     return user[0];
+}
+
+function getUserBySessID(value) {
+    return getUserBy("ID", currentSessions[value]);
 }
