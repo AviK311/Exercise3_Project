@@ -9,8 +9,6 @@ var fs = require('fs');
 //session
 const session = require("express-session");
 
-
-
 //use
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({
@@ -18,21 +16,7 @@ app.use(bodyParser.urlencoded({
 }));
 
 app.use(session({ secret: "poo" }));
-//for delayed rsp
-// const reqCounts = {};
-// app.use(function(req, res, next) {
-//     if (!(req.sessionID in reqCounts))
-//         reqCounts[req.sessionID] = 0;
-//     reqCounts[req.sessionID]++;
-//     let reqCount = reqCounts[req.sessionID];
-//     console.log("current count " + reqCount);
-//     setTimeout(function() {
-//         console.log("actual count " + reqCounts[req.sessionID]);
-//         if (reqCount == reqCounts[req.sessionID])
-//             next();
-//     }, 1000)
 
-// });
 app.use(function(req, res, next) { setTimeout(next, 1000); })
 
 
@@ -47,10 +31,11 @@ branches.forEach(branch => {
     branchName[branch.ID] = branch.name;
 });
 
-//not implemented yet
-var password_attempts = 0;
+
 
 const currentSessions = {};
+const lockedSessions = {};
+const passwordattempts = {};
 // set the view engine to ejs
 app.set("view engine", "ejs");
 
@@ -80,6 +65,9 @@ app.delete("/deleteUser", function(req, res) {
 
 
 });
+
+
+
 
 app.post("/promoteUser", function(req, res) {
     let currentUser = getUserBySessID(req.sessionID);
@@ -238,6 +226,8 @@ app.post("/createBranch", function(req, res) {
 
 });
 app.post("/authenticate", function(req, res) {
+    if (!(req.sessionID in passwordattempts))
+        passwordattempts[req.sessionID] = {};
     let body = req.body;
     if (!validateEmail(body.email)) {
         res.json({ success: false, message: "Email is invalid" });
@@ -252,8 +242,25 @@ app.post("/authenticate", function(req, res) {
         return;
     }
     user = user[0];
+    if (req.sessionID in lockedSessions && user.ID in lockedSessions[req.sessionID]) {
+        console.log(lockedSessions[req.sessionID]);
+        let difference = (Date.now() - lockedSessions[req.sessionID][user.ID]);
+        difference = difference / (1000 * 3600);
+        console.log(difference);
+        if (difference < 6) {
+            res.json({ success: false, message: "This user has been locked out of this session" });
+            return;
+        } else {
+            delete lockedSessions[req.sessionID][user.ID];
+            delete passwordattempts[req.sessionID][user.ID];
+        }
+    }
     if (user.password == body.password) {
         setCookies(res, user);
+        if (body.remember)
+            setRememberCookies(res, user);
+        else
+            resetRememberCookies(res);
         let jsonToSend = {
             success: true,
             user: user,
@@ -264,19 +271,26 @@ app.post("/authenticate", function(req, res) {
 
 
     } else {
-        res.json({ success: false, message: "Wrong Password" });
-        password_attempts++;
+        if (!(user.ID in passwordattempts[req.sessionID]))
+            passwordattempts[req.sessionID][user.ID] = 1;
+        else
+            passwordattempts[req.sessionID][user.ID]++;
+
+        if (passwordattempts[req.sessionID][user.ID] >= 5) {
+            if (!(req.sessionID in lockedSessions))
+                lockedSessions[req.sessionID] = {};
+            lockedSessions[req.sessionID][user.ID] = Date.now()
+
+            res.json({ success: false, message: "Wrong Password" });
+        }
+
+
     }
 });
 
 app.get("/logout", (req, res) => {
     delete currentSessions[req.sessionID];
-    req.session.destroy((err) => {
-        if (err) {
-            return console.log(err);
-        }
 
-    });
     setCookies(res, { fname: '', lname: '', email: '' });
     res.json({ success: true });
 
@@ -287,8 +301,8 @@ app.get("/userType", (req, res) => {
     res.json({ isAuth: getAuthLevel(currentUser) >= 1 });
 });
 
-app.listen(8071, function() {
-    console.log("running express server on 8071");
+app.listen(8072, function() {
+    console.log("running express server on 8072");
 });
 
 
@@ -307,6 +321,18 @@ function setCookies(res, user) {
     res.cookie("lname", user.lname, options);
     res.cookie("email", user.email, options);
     res.cookie("userType", user.userType, options);
+}
+
+function setRememberCookies(res, user) {
+    res.cookie("remember", true);
+    res.cookie("rEmail", user.email);
+    res.cookie("rPassword", user.password);
+}
+
+function resetRememberCookies(res) {
+    res.cookie("remember", false);
+    res.cookie("rEmail", '');
+    res.cookie("rPassword", '');
 }
 
 function validateEmail(email) {

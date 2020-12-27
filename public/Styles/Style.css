@@ -26,3 +26,11 @@ ol li {
 .card.user {
     min-height: 357px;
 }
+
+#body {
+    max-width: none;
+}
+
+li {
+    width: auto !important;
+}

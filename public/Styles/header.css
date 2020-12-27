@@ -87,3 +87,8 @@
   .spinner {
       float: right;
   }
+  
+  #errorMsg {
+      font-size: small;
+      color: red;
+  }

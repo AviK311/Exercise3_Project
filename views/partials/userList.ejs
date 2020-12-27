@@ -1,9 +1,9 @@
 <ul style="list-style-type: none; overflow: hidden; padding-top: 30px;">
 
     <% users.forEach(user=>{ %>
-        <il class="col-md-4" style="float: left; padding-bottom: 15px; padding-right: 15px;">
+        <li class="col-md-4" style="float: left; padding-bottom: 15px; padding-right: 15px;">
             <%- include('./user', {user: user, withPassword: withPassword, Branch: Branches[user.Branch]}); %>
-        </il>
+        </li>
         <% }); %>
 </ul>
 <div style="margin-bottom: 10px;">
