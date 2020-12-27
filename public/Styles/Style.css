@@ -34,3 +34,16 @@ ol li {
 li {
     width: auto !important;
 }
+
+.main-footer-wrapper {
+    position: relative;
+    min-height: 100vh;
+}
+
+#main {
+    padding-bottom: 7.5rem
+}
+
+.card {
+    width: 18rem;
+}

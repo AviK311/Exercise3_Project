@@ -21,11 +21,11 @@ app.use(function(req, res, next) { setTimeout(next, 1000); })
 
 
 
-
 //data
 var users = require("./jsons/users");
 const flowers = require("./jsons/flowers");
 var branches = require("./jsons/branches");
+var carts = require("./jsons/carts");
 var branchName = {};
 branches.forEach(branch => {
     branchName[branch.ID] = branch.name;
@@ -113,6 +113,16 @@ app.get("/contact", function(req, res) {
 });
 app.get("/careers", function(req, res) {
     res.send("ABSOLUTELY NONE");
+});
+
+app.post("/cart", function(req, res) {
+    let cart = req.body.cart;
+    carts[currentSessions[req.sessionID]] = cart;
+    fs.writeFile('./jsons/carts.json', JSON.stringify(carts, null, 4), function(err) {
+        console.log(err);
+    });
+    res.json({ success: true });
+
 });
 
 app.get("/flowers", function(req, res) {
@@ -261,10 +271,14 @@ app.post("/authenticate", function(req, res) {
             setRememberCookies(res, user);
         else
             resetRememberCookies(res);
+        if (!(user.ID in carts))
+            carts[user.ID] = [];
+
         let jsonToSend = {
             success: true,
             user: user,
-            isAuth: getAuthLevel(user) >= 1
+            isAuth: getAuthLevel(user) >= 1,
+            cart: carts[user.ID]
         }
         currentSessions[req.sessionID] = user.ID;
         res.json(jsonToSend);
@@ -301,9 +315,27 @@ app.get("/userType", (req, res) => {
     res.json({ isAuth: getAuthLevel(currentUser) >= 1 });
 });
 
+app.get("/cartPage", (req, res) => {
+    console.log(carts);
+    cartWithImages = carts[currentSessions[req.sessionID]].map(item => {
+        let flower = getFlowerByID(item.id);
+        return {
+            quantity: item.quantity,
+            color: item.color,
+            name: flower.name,
+            img: flower.img,
+            price: flower.price,
+            id: item.id
+        };
+    });
+
+    res.render('partials/cart', { cart: cartWithImages });
+});
+
 app.listen(8072, function() {
     console.log("running express server on 8072");
 });
+
 
 
 function addUser(newUser) {
@@ -357,4 +389,13 @@ function getUserBy(field, value) {
 
 function getUserBySessID(value) {
     return getUserBy("ID", currentSessions[value]);
+}
+
+
+
+function getFlowerByID(value) {
+    filteredFlowers = flowers.filter(f => f.ID == value);
+    if (filteredFlowers.length == 0)
+        return null;
+    return filteredFlowers[0];
 }

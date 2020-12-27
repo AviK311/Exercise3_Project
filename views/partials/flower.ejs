@@ -10,19 +10,18 @@
     </div>
 
     <div class="card-body ">
-        <div style="flex:1;"><a class="nav-link dropdown-toggle" href="#" id=<%-flower.name.replace( ' ', '-') + "dropDownMenu"%> data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"> Colors
+        <div style="flex:1;"><a class="nav-link dropdown-toggle" href="#" id=<%- "dropDownMenu"+flower.ID%> data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"> Colors
             </a>
-            <div class="dropdown-menu" aria-labelledby=<%-flower.name + "dropDownMenu"%>>
+            <div class="dropdown-menu" aria-labelledby=<%- "dropDownMenu"+flower.ID%>>
                 <% flower.color.forEach(color=>{ %>
-                    <a class="dropdown-item" onclick="$('#'+$(this).parent().attr('aria-labelledby')).text($(this).html());">
-                        <%-color[0].toUpperCase() +
-                        color.slice(1);%>
+                    <a class="dropdown-item" onclick="$('#'+$(this).parent().attr('aria-labelledby')).text($(this).text());">
+                        <%-color%>
                     </a>
                     <% }); %>
 
             </div>
-            Amount:<input class="form-control" type="number" value="1" min='1'>
-            <button class="btn btn-warning">Add to Cart</button>
+            Amount:<input id=<%- "quantity" + flower.ID%> class="form-control" type="number" value="1" min='1'>
+            <button class="btn btn-warning add-flwr-btn" id=<%- "addBtn" + flower.ID%>>Add to Cart</button>
 
         </div>
 
