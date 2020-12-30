@@ -1,0 +1,16 @@
+.Product-img img {
+    width: 100%;
+}
+
+.main-section {
+    font-family: 'Roboto Condensed', sans-serif;
+}
+
+.table {
+    border-radius: 20px;
+    border: none;
+}
+
+.table thead th {
+    border-top: none;
+}

@@ -10,7 +10,7 @@
     </div>
 
     <div class="card-body ">
-        <div style="flex:1;"><a class="nav-link dropdown-toggle" href="#" id=<%- "dropDownMenu"+flower.ID%> data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"> Colors
+        <div style="flex:1;"><a class="nav-link dropdown-toggle" href="#" id=<%- "dropDownMenu"+flower.ID%> data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"> Choose a Color
             </a>
             <div class="dropdown-menu" aria-labelledby=<%- "dropDownMenu"+flower.ID%>>
                 <% flower.color.forEach(color=>{ %>
@@ -21,7 +21,7 @@
 
             </div>
             Amount:<input id=<%- "quantity" + flower.ID%> class="form-control" type="number" value="1" min='1'>
-            <button class="btn btn-warning add-flwr-btn" id=<%- "addBtn" + flower.ID%>>Add to Cart</button>
+            <button class="btn btn-warning add-flwr-btn" id=<%- "addBtn" + flower.ID%>>Add to Cart <i class="fa fa-plus" aria-hidden="true"></i></button>
 
         </div>
 

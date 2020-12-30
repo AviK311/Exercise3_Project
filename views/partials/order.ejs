@@ -1,0 +1,91 @@
+<% orders.forEach(order=>{ %>
+    <div class="container main-section">
+        <div class="row">
+            <div class="col-lg-12 pl-3 pt-3">
+                <table class="table table-hover bg-warning">
+                    <thead>
+                        <tr>
+                            <th>Product</th>
+                            <th>Price</th>
+                            <th style="width:10%;">Quantity</th>
+                            <th>Subtotal</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <% order.details.forEach(item=>{ %>
+                            <%- include('./orderItem', {item:item}); %>
+                                <% }); %>
+                                    <tr>
+                                        <td>
+                                            <div class="row">
+                                                <div class="col-lg-10">
+                                                    <%if(isEmployee){%>
+                                                        <h4 class="nomargin">
+                                                            Name: <strong><%- order.userName %></strong>
+                                                        </h4>
+                                                        <%}%>
+                                                            <h4 class="nomargin">
+                                                                Address: <strong><%- order.address %></strong>
+                                                            </h4>
+                                                            <h4 class="nomargin">
+                                                                Description: <strong><%- order.description %></strong>
+                                                            </h4>
+
+                                                </div>
+                                            </div>
+                                        </td>
+                                        <td colspan="3">
+                                            <div class="row">
+                                                <div>
+                                                    <h4 class="nomargin">
+                                                        Date Ordered:
+                                                        <strong><%- order.time %></strong>
+                                                    </h4>
+                                                    <h4 class="nomargin">
+                                                        Total Price: <strong><%- order.details.reduce((first, second)=>(first+second.price*second.quantity),0).toFixed(2) %></strong>
+
+                                                    </h4>
+
+                                                </div>
+                                            </div>
+                                        </td>
+
+
+                                    </tr>
+                    </tbody>
+
+                    <tfoot>
+                        <tr>
+                            <% if (order.isDelivered){%>
+                                <td colspan="5">
+                                    <h4 class="nomargin">Order has been delivered on <strong><%- order.deliveryDate%></strong></td>
+                                <%}else{%>
+                                    <% if (order.isDeployed){%>
+                                        <td colspan="5">
+                                            <h4 class="nomargin">Order is on its way </h4><a class="btn btn-success btn-block">Confirm Arrival <i class="fa fa-check"></i></a></td>
+                                        <%}else{%>
+
+                                            <td colspan="5">
+                                                <h4 class="nomargin">Order has not been deployed yet</h4>
+                                                <%if(isEmployee){%>
+                                                    <a class="btn btn-success btn-block" onclick="deploy(<%-order.ID%>)">Deploy <i class="fa fa-paper-plane"></i></a>
+                                                    <%}%>
+                                            </td>
+                                            <%}}%>
+
+
+
+
+
+
+                        </tr>
+                    </tfoot>
+                </table>
+            </div>
+        </div>
+    </div>
+    <% }); %>
+        <button class="btn btn-warning" onclick="mainLoad('<%-reloadRoute%>');">Refresh Page<i class="fa fa-refresh"></i></button>
+
+        <script src="Scripts/Orders.js">
+        </script>

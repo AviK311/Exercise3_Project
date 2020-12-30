@@ -1,0 +1,34 @@
+<tr id=<%-item.id+ "_"+item.color+ "_Full"%>>
+    <td>
+        <div class="row">
+            <div class="col-lg-2 Product-img">
+                <img src=<%-item.img%> alt="..." class="img-responsive" />
+            </div>
+            <div class="col-lg-10">
+                <h4 class="nomargin">
+                    <%-item.name%>
+                </h4>
+                <p>
+                    <%-item.color%>
+                </p>
+            </div>
+        </div>
+    </td>
+    <td><span id=<%-item.id+ "_"+item.color+ "_Price"%>>
+        <%-item.price%>
+    </span>
+    </td>
+    <td data-th="Quantity">
+        <input type="number" min="1" class="form-control text-center" id=<%-item.id+ "_"+item.color+ "_Quantity"%> value=
+        <%-item.quantity%>>
+    </td>
+    <td>
+        <span class="priceCount" id=<%-item.id+ "_"+item.color+ "_Total"%>>
+        <%-(item.price * item.quantity).toFixed(2)%>
+    </span>
+    </td>
+    <td class="actions" data-th="" style="width:10%;">
+        <button class="btn btn-info btn-sm refresh-btn" id=<%-item.id+ "_"+item.color+ "_Refresh"%>><i class="fa fa-refresh" style="pointer-events: none;"></i></button>
+        <button class="btn btn-danger btn-sm trash-btn" id=<%-item.id+ "_"+item.color+ "_Delete"%>><i class="fa fa-trash-o" style="pointer-events: none;"></i></button>
+    </td>
+</tr>

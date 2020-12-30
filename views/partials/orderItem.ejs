@@ -1,0 +1,32 @@
+<tr>
+    <td>
+        <div class="row">
+            <div class="col-lg-2 Product-img">
+                <img src=<%-item.img%> alt="..." class="img-responsive" />
+            </div>
+            <div class="col-lg-10">
+                <h4 class="nomargin">
+                    <%-item.name%>
+                </h4>
+                <p>
+                    <%-item.color%>
+                </p>
+            </div>
+        </div>
+    </td>
+    <td><span>
+        <%-item.price%>
+    </span>
+    </td>
+    <td data-th="Quantity">
+        <span>
+            <%-item.quantity%>
+        </span>
+    </td>
+    <td>
+        <span>
+        <%-(item.price * item.quantity).toFixed(2)%>
+    </span>
+    </td>
+
+</tr>

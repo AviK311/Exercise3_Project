@@ -26,6 +26,7 @@ var users = require("./jsons/users");
 const flowers = require("./jsons/flowers");
 var branches = require("./jsons/branches");
 var carts = require("./jsons/carts");
+var orders = require("./jsons/orders");
 var branchName = {};
 branches.forEach(branch => {
     branchName[branch.ID] = branch.name;
@@ -33,9 +34,9 @@ branches.forEach(branch => {
 
 
 
-const currentSessions = {};
-const lockedSessions = {};
-const passwordattempts = {};
+const currentSessions = {}; //key - sessionID. val - userID
+const lockedSessions = {}; //key - sessionID. val - object(key - userID. val - lock time)
+const passwordattempts = {}; //key - sessionID. val - object(key - userID. val - attempts)
 // set the view engine to ejs
 app.set("view engine", "ejs");
 
@@ -45,8 +46,7 @@ app.get("/", function(req, res) {
     res.render("index");
 });
 app.get("/home", function(req, res) {
-    console.log(req.session);
-    console.log(req.sessionID);
+
     res.render("partials/home");
 });
 
@@ -118,6 +118,30 @@ app.get("/careers", function(req, res) {
 app.post("/cart", function(req, res) {
     let cart = req.body.cart;
     carts[currentSessions[req.sessionID]] = cart;
+    fs.writeFile('./jsons/carts.json', JSON.stringify(carts, null, 4), function(err) {
+        console.log(err);
+    });
+    res.json({ success: true });
+
+});
+
+app.post("/createOrder", function(req, res) {
+    let cart = carts[currentSessions[req.sessionID]];
+    orders.push({
+        userID: currentSessions[req.sessionID],
+        price: req.body.totalPrice,
+        address: req.body.address,
+        description: req.body.description,
+        details: cart,
+        orderTime: getCurrentDateTime(),
+        isDeployed: false,
+        isDelivered: false,
+        ID: orders.length ? orders.reduce((prev, current) => (prev.ID > current.ID) ? prev : current).ID + 1 : 0
+    });
+    fs.writeFile('./jsons/orders.json', JSON.stringify(orders, null, 4), function(err) {
+        console.log(err);
+    });
+    carts[currentSessions[req.sessionID]] = [];
     fs.writeFile('./jsons/carts.json', JSON.stringify(carts, null, 4), function(err) {
         console.log(err);
     });
@@ -312,25 +336,84 @@ app.get("/logout", (req, res) => {
 app.get("/userType", (req, res) => {
     currentUser = getUserBySessID(req.sessionID);
     console.log(currentUser);
-    res.json({ isAuth: getAuthLevel(currentUser) >= 1 });
+    res.json({ isAuth: getAuthLevel(currentUser) >= 1, cart: carts[currentSessions[req.sessionID]] });
 });
 
 app.get("/cartPage", (req, res) => {
-    console.log(carts);
-    cartWithImages = carts[currentSessions[req.sessionID]].map(item => {
-        let flower = getFlowerByID(item.id);
-        return {
-            quantity: item.quantity,
-            color: item.color,
-            name: flower.name,
-            img: flower.img,
-            price: flower.price,
-            id: item.id
-        };
-    });
+    let cartWithImages = carts[currentSessions[req.sessionID]].map(item => getDetailedFlowerFromOrderItem(item));
 
     res.render('partials/cart', { cart: cartWithImages });
 });
+
+app.get("/orderPage", (req, res) => {
+    let currentUserOrders = orders.filter(order => order.userID == currentSessions[req.sessionID]);
+    currentUserOrders = currentUserOrders.map(order => {
+        let detailsWithImgs = order.details.map(item => getDetailedFlowerFromOrderItem(item));
+        currentUser = getUserBy("ID", order.userID);
+        return {
+            userName: currentUser.fname + " " + currentUser.lname,
+            address: order.address,
+            description: order.description,
+            time: order.orderTime,
+            details: detailsWithImgs,
+            isDeployed: order.isDeployed,
+            isDelivered: order.isDelivered
+        };
+
+    });
+    currentUserOrders.sort((first, second) => getDateFromString(first.time) < getDateFromString(second.time) ? 1 : -1)
+    res.render('partials/order', { orders: currentUserOrders, isEmployee: false, reloadRoute: "orderPage" });
+});
+
+app.get("/allOrderPage", (req, res) => {
+    let currentUser = getUserBySessID(req.sessionID);
+    if (getAuthLevel(currentUser) < 1) {
+        res.json({ success: false, message: "You are unauthorized to see this content" });
+        return;
+    }
+    let currentUserOrders = orders.map(order => {
+        let detailsWithImgs = order.details.map(item => getDetailedFlowerFromOrderItem(item));
+        currentUser = getUserBy("ID", order.userID);
+        return {
+            userName: currentUser.fname + " " + currentUser.lname,
+            address: order.address,
+            description: order.description,
+            time: order.orderTime,
+            details: detailsWithImgs,
+            isDeployed: order.isDeployed,
+            isDelivered: order.isDelivered,
+            ID: order.ID
+        };
+
+    });
+    currentUserOrders.sort((first, second) => getDateFromString(first.time) < getDateFromString(second.time) ? 1 : -1)
+    res.render('partials/order', { orders: currentUserOrders, isEmployee: true, reloadRoute: "allOrderPage" });
+});
+
+app.post("/deployOrder", (req, res) => {
+    let currentUser = getUserBySessID(req.sessionID);
+    if (getAuthLevel(currentUser) < 1) {
+        res.json({ success: false, message: "You are unauthorized to deploy orders" });
+        return;
+    }
+    let orderID = req.body.id;
+    currentOrder = orders.filter(order => order.ID == orderID);
+    if (currentOrder.length == 0) {
+        res.json({ success: false, message: "That order does not exist" });
+        return;
+    }
+    currentOrder = currentOrder[0];
+    if (currentOrder.isDeployed) {
+        res.json({ success: false, message: "That order has already been deployed" });
+        return;
+    }
+    currentOrder.isDeployed = true;
+    fs.writeFile('./jsons/orders.json', JSON.stringify(orders, null, 4), function(err) {
+        console.log(err);
+    });
+});
+
+
 
 app.listen(8072, function() {
     console.log("running express server on 8072");
@@ -398,4 +481,31 @@ function getFlowerByID(value) {
     if (filteredFlowers.length == 0)
         return null;
     return filteredFlowers[0];
+}
+
+function getDetailedFlowerFromOrderItem(item) {
+    let flower = getFlowerByID(item.id);
+    return {
+        quantity: item.quantity,
+        color: item.color,
+        name: flower.name,
+        img: flower.img,
+        price: flower.price,
+        id: item.id
+    };
+
+}
+
+function getCurrentDateTime() {
+    let today = new Date();
+    let date = today.getDate() + '/' + (today.getMonth() + 1) + '/' + today.getFullYear();
+    let time = today.getHours() + ":" + today.getMinutes();
+    return time + ' ' + date;
+}
+
+function getDateFromString(dateStr) {
+    let splitDate = dateStr.split(' ');
+    let time = splitDate[0];
+    let date = splitDate[1].split('/');
+    return Date.parse(`${time} ${date[1]}/${date[0]}/${date[2]}`);
 }

@@ -98,3 +98,13 @@ body {
     /* position: relative;
     top: 6px; */
 }
+
+#cartSize {
+    font-size: 12px;
+    background: #ff0000;
+    color: #fff;
+    padding: 0 5px;
+    vertical-align: top;
+    margin-left: -7px;
+    border-radius: 9px;
+}
