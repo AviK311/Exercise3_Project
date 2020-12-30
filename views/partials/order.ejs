@@ -58,11 +58,15 @@
                         <tr>
                             <% if (order.isDelivered){%>
                                 <td colspan="5">
-                                    <h4 class="nomargin">Order has been delivered on <strong><%- order.deliveryDate%></strong></td>
+                                    <h4 class="nomargin">Order has been delivered on <strong><%- order.deliveryTime%></strong></td>
                                 <%}else{%>
                                     <% if (order.isDeployed){%>
+
                                         <td colspan="5">
-                                            <h4 class="nomargin">Order is on its way </h4><a class="btn btn-success btn-block">Confirm Arrival <i class="fa fa-check"></i></a></td>
+                                            <h4 class="nomargin">Order is on its way </h4>
+                                            <% if (!isEmployee){%><a class="btn btn-success btn-block" onclick="accept(<%-order.ID%>)">Confirm Arrival <i class="fa fa-check"></i></a>
+                                                <%}%>
+                                        </td>
                                         <%}else{%>
 
                                             <td colspan="5">

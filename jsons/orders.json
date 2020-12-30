@@ -1,1 +1,20 @@
-[]
+[
+    {
+        "userID": 0,
+        "price": 9.63,
+        "address": "111",
+        "description": "222",
+        "details": [
+            {
+                "id": "3",
+                "quantity": 1,
+                "color": "Purple"
+            }
+        ],
+        "orderTime": "14:24 30/12/2020",
+        "isDeployed": true,
+        "isDelivered": true,
+        "deliveryTime": "14:38 30/12/2020",
+        "ID": 0
+    }
+]

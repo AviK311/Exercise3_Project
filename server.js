@@ -136,6 +136,7 @@ app.post("/createOrder", function(req, res) {
         orderTime: getCurrentDateTime(),
         isDeployed: false,
         isDelivered: false,
+        deliveryTime: null,
         ID: orders.length ? orders.reduce((prev, current) => (prev.ID > current.ID) ? prev : current).ID + 1 : 0
     });
     fs.writeFile('./jsons/orders.json', JSON.stringify(orders, null, 4), function(err) {
@@ -357,7 +358,9 @@ app.get("/orderPage", (req, res) => {
             time: order.orderTime,
             details: detailsWithImgs,
             isDeployed: order.isDeployed,
-            isDelivered: order.isDelivered
+            isDelivered: order.isDelivered,
+            deliveryTime: order.deliveryTime,
+            ID: order.ID,
         };
 
     });
@@ -371,7 +374,7 @@ app.get("/allOrderPage", (req, res) => {
         res.json({ success: false, message: "You are unauthorized to see this content" });
         return;
     }
-    let currentUserOrders = orders.map(order => {
+    let ordersForEjs = orders.map(order => {
         let detailsWithImgs = order.details.map(item => getDetailedFlowerFromOrderItem(item));
         currentUser = getUserBy("ID", order.userID);
         return {
@@ -382,12 +385,14 @@ app.get("/allOrderPage", (req, res) => {
             details: detailsWithImgs,
             isDeployed: order.isDeployed,
             isDelivered: order.isDelivered,
-            ID: order.ID
+            ID: order.ID,
+            deliveryTime: order.deliveryTime
         };
 
     });
-    currentUserOrders.sort((first, second) => getDateFromString(first.time) < getDateFromString(second.time) ? 1 : -1)
-    res.render('partials/order', { orders: currentUserOrders, isEmployee: true, reloadRoute: "allOrderPage" });
+    console.log(ordersForEjs);
+    ordersForEjs.sort((first, second) => getDateFromString(first.time) < getDateFromString(second.time) ? 1 : -1)
+    res.render('partials/order', { orders: ordersForEjs, isEmployee: true, reloadRoute: "allOrderPage" });
 });
 
 app.post("/deployOrder", (req, res) => {
@@ -411,6 +416,31 @@ app.post("/deployOrder", (req, res) => {
     fs.writeFile('./jsons/orders.json', JSON.stringify(orders, null, 4), function(err) {
         console.log(err);
     });
+    res.json({ success: true, message: "The order has been successfully deployed" });
+});
+
+app.post("/acceptOrder", (req, res) => {
+    let orderID = req.body.id;
+    currentOrder = orders.filter(order => order.ID == orderID);
+    if (currentOrder.length == 0) {
+        res.json({ success: false, message: "That order does not exist" });
+        return;
+    }
+    currentOrder = currentOrder[0];
+    if (!currentOrder.isDeployed) {
+        res.json({ success: false, message: "That order has not been deployed" });
+        return;
+    }
+    if (currentOrder.isDelivered) {
+        res.json({ success: false, message: "That order has already been delivered" });
+        return;
+    }
+    currentOrder.isDelivered = true;
+    currentOrder.deliveryTime = getCurrentDateTime();
+    fs.writeFile('./jsons/orders.json', JSON.stringify(orders, null, 4), function(err) {
+        console.log(err);
+    });
+    res.json({ success: true, message: "The order has been accepted" });
 });
 
 
