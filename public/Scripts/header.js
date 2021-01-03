@@ -1,7 +1,15 @@
+var currentRequest;
 async function mainLoad(route) {
     loading(true);
-    $('#main').load(route, function() {
-        loading(false);
+    console.log(currentRequest);
+    if (currentRequest)
+        currentRequest.abort();
+    currentRequest = $.ajax({
+        url: route,
+        success: function(data) {
+            $("#main").html(data);
+            loading(false);
+        }
     });
 }
 
