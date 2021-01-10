@@ -1,4 +1,8 @@
 async function deleteUser(event) {
+    if (!adding) {
+        alertServerError();
+        return;
+    }
     loading(true);
     fetch("/deleteUser", {
             method: "DELETE",
@@ -17,9 +21,7 @@ async function deleteUser(event) {
                 $("#deleteUserModal").modal("toggle");
             }
         })
-        .catch((error) => {
-            console.error("Failed to connect to server");
-        });
+        .catch(disableChanges);
 }
 
 function prepareDelete(name, email) {
@@ -29,6 +31,10 @@ function prepareDelete(name, email) {
     }, deleteUser);
 }
 async function promoteUser(event) {
+    if (!adding) {
+        alertServerError();
+        return;
+    }
     loading(true);
     fetch("/promoteUser", {
             method: "POST",
@@ -46,12 +52,14 @@ async function promoteUser(event) {
                 $("#promoteModal").modal("toggle");
             }
         })
-        .catch((error) => {
-            console.error("Failed to connect to server");
-        });
+        .catch(disableChanges);
 }
 
 async function demoteUser(event) {
+    if (!adding) {
+        alertServerError();
+        return;
+    }
     loading(true);
     fetch("/demoteUser", {
             method: "POST",
@@ -69,9 +77,7 @@ async function demoteUser(event) {
                 $("#demoteModal").modal("toggle");
             }
         })
-        .catch((error) => {
-            console.error("Failed to connect to server");
-        });
+        .catch(disableChanges);
 }
 
 
@@ -89,6 +95,10 @@ function prepareDemote(name, email) {
     }, demoteUser);
 }
 async function createEmployee() {
+    if (!adding) {
+        alertServerError();
+        return;
+    }
     let password = $(passwordAddEmployee).val();
     if (password != $(passwordAddEmployeeConfirm).val()) {
         return;
@@ -120,11 +130,7 @@ async function createEmployee() {
             if (data.success) {
                 $("#addEmployeeModal").modal("toggle");
                 $(".form-group input").val('');
-
             }
-
         })
-        .catch((error) => {
-            console.error("Failed to connect to server");
-        });
+        .catch(disableChanges);
 }

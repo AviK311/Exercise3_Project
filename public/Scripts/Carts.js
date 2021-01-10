@@ -15,7 +15,6 @@ $(".refresh-btn").on('click', function(e) {
     filteredCart = shoppingCart.filter(item => item.id == id && item.color == color);
     filteredCart[0].quantity = quantity;
     updateCart();
-    //toggleCreateOrderBtn();
     updateTotal();
 });
 
@@ -33,7 +32,6 @@ $(".trash-btn").on('click', function(e) {
     shoppingCart.splice(filteredIndex, 1);
     updateCart();
     $("#" + fullElement).remove();
-    //toggleCreateOrderBtn();
     updateTotal();
 });
 
@@ -52,6 +50,10 @@ function updateTotal() {
 
 
 async function createOrder() {
+    if (!adding) {
+        alertServerError();
+        return;
+    }
     if (!$("#orderAddress").val() || !$("#orderDescription").val()) return;
     loading(true);
     fetch("/createOrder", {
@@ -78,9 +80,7 @@ async function createOrder() {
                 console.log("Error:", data.message);
             }
         })
-        .catch((error) => {
-            console.error("Failed to connect to server");
-        });
+        .catch(disableChanges);
 }
 
 function toggleCreateOrderBtn() {

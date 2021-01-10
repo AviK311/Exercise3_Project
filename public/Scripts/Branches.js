@@ -1,4 +1,8 @@
 async function createBranch() {
+    if (!adding) {
+        alertServerError();
+        return;
+    }
     let name = $(nameAddBranch).val();
     let address = $(addressAddBranch).val();
     loading(true);
@@ -21,7 +25,5 @@ async function createBranch() {
             }
 
         })
-        .catch((error) => {
-            console.error("Failed to connect to server");
-        });
+        .catch(disableChanges);
 }

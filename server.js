@@ -17,7 +17,7 @@ app.use(bodyParser.urlencoded({
 
 app.use(session({ secret: "poo" }));
 
-app.use(function(req, res, next) { setTimeout(next, 1000); })
+app.use(function(req, res, next) { setTimeout(next, 1000); });
 
 
 

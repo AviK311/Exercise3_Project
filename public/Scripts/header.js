@@ -1,17 +1,38 @@
 var currentRequest;
+var adding = true;
 async function mainLoad(route) {
     loading(true);
     console.log(currentRequest);
     if (currentRequest)
         currentRequest.abort();
+    waiting = true;
     currentRequest = $.ajax({
         url: route,
         success: function(data) {
             $("#main").html(data);
             loading(false);
-        }
+        },
+        timeout: 5000,
+        error: disableChanges
     });
 }
+
+function disableChanges(error) {
+    alert("Failed to connect to server");
+    $("#spinner").toggle(false);
+    adding = false;
+}
+
+function enableChanges() {
+    if (!adding)
+        alert("Connection to server stabilized");
+    adding = true;
+}
+
+function alertServerError() {
+    alert("Adding and deleting have been disabled due to server error. Please try another request");
+}
+
 
 function isAuthorizedUsers(userType) {
     return (
@@ -28,6 +49,10 @@ function get_user() {
 }
 
 async function login(email, password) {
+    if (!adding) {
+        alertServerError();
+        return;
+    }
     loading(true);
     fetch("/authenticate", {
             method: "POST",
@@ -62,9 +87,7 @@ async function login(email, password) {
 
             }
         })
-        .catch((error) => {
-            console.error("Failed to connect to server");
-        });
+        .catch(disableChanges);
 }
 
 
@@ -85,9 +108,7 @@ async function logout() {
 
             }
         })
-        .catch((error) => {
-            console.error("Failed to connect to server");
-        });
+        .catch(disableChanges);
 }
 
 async function checkUser() {
@@ -111,9 +132,7 @@ async function checkUser() {
                 shoppingCart = data.cart;
                 $("#cartSize").text(shoppingCart.length);
             })
-            .catch((error) => {
-                console.error("Failed to connect to server");
-            });
+            .catch(disableChanges);
 
     } else $(".employee-only").toggle(false);
 }
@@ -138,6 +157,10 @@ function activate(curElement) {
 }
 checkUser();
 async function createCustomer() {
+    if (!adding) {
+        alertServerError();
+        return;
+    }
     let password = $(passwordAddCustomer).val();
     if (password != $(passwordAddCustomerConfirm).val()) {
         return;
@@ -170,13 +193,12 @@ async function createCustomer() {
             }
 
         })
-        .catch((error) => {
-            console.error("Failed to connect to server");
-        });
+        .catch(disableChanges);
 }
 
 function loading(flag = true) {
-    $("#spinner").toggle(flag)
+    if (!flag) enableChanges();
+    $("#spinner").toggle(flag);
 }
 
 if (getCookie("remember")) {
@@ -188,6 +210,10 @@ $('#rememberMe').prop('checked', getCookie("remember") == 'true');
 
 
 async function updateCart() {
+    if (!adding) {
+        alertServerError();
+        return;
+    }
     loading(true);
     fetch("/cart", {
             method: "POST",
@@ -208,7 +234,5 @@ async function updateCart() {
                 console.log("Error:", data.message);
             }
         })
-        .catch((error) => {
-            console.error("Failed to connect to server");
-        });
+        .catch(disableChanges);
 }

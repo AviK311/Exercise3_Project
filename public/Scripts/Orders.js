@@ -1,5 +1,8 @@
 async function deploy(id) {
-
+    if (!adding) {
+        alertServerError();
+        return;
+    }
     loading(true);
     fetch("/deployOrder", {
             method: "POST",
@@ -19,13 +22,14 @@ async function deploy(id) {
                 console.log("Error:", data.message);
             }
         })
-        .catch((error) => {
-            console.error("Failed to connect to server");
-        });
+        .catch(disableChanges);
 }
 
 async function accept(id) {
-
+    if (!adding) {
+        alertServerError();
+        return;
+    }
     loading(true);
     fetch("/acceptOrder", {
             method: "POST",
@@ -45,7 +49,5 @@ async function accept(id) {
                 console.log("Error:", data.message);
             }
         })
-        .catch((error) => {
-            console.error("Failed to connect to server");
-        });
+        .catch(disableChanges);
 }
