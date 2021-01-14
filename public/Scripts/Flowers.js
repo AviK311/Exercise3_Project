@@ -16,3 +16,5 @@ $(".add-flwr-btn").on('click', function(e) {
     console.log(shoppingCart);
 
 });
+
+$(".card a.dropdown-item").click(function() { $('#' + $(this).parent().attr('aria-labelledby')).text($(this).text()); });

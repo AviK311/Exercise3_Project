@@ -57,9 +57,7 @@ app.delete("/deleteUser", function(req, res) {
         return;
     }
     users = users.filter(u => u.email != req.body.email);
-    fs.writeFile('./jsons/users.json', JSON.stringify(users, null, 4), function(err) {
-        console.log(err);
-    });
+    writeJson('users', users);
 
     res.json({ success: true, message: "User was deleted" });
 
@@ -79,9 +77,8 @@ app.post("/promoteUser", function(req, res) {
     userToPromote = users.findIndex(u => u.email == req.body.email);
     users[userToPromote].userType = "manager";
 
-    fs.writeFile('./jsons/users.json', JSON.stringify(users, null, 4), function(err) {
-        console.log(err);
-    });
+    writeJson('users', users);
+
     res.json({ success: true, message: "User was promoted" });
 
 
@@ -95,10 +92,8 @@ app.post("/demoteUser", function(req, res) {
     }
     userToDemote = users.findIndex(u => u.email == req.body.email);
     users[userToPromote].userType = "employee";
+    writeJson('users', users);
 
-    fs.writeFile('./jsons/users.json', JSON.stringify(users, null, 4), function(err) {
-        console.log(err);
-    });
     res.json({ success: true, message: "User was demoted" });
 
 
@@ -118,9 +113,7 @@ app.get("/careers", function(req, res) {
 app.post("/cart", function(req, res) {
     let cart = req.body.cart;
     carts[currentSessions[req.sessionID]] = cart;
-    fs.writeFile('./jsons/carts.json', JSON.stringify(carts, null, 4), function(err) {
-        console.log(err);
-    });
+    writeJson('carts', carts);
     res.json({ success: true });
 
 });
@@ -139,19 +132,17 @@ app.post("/createOrder", function(req, res) {
         deliveryTime: null,
         ID: orders.length ? orders.reduce((prev, current) => (prev.ID > current.ID) ? prev : current).ID + 1 : 0
     });
-    fs.writeFile('./jsons/orders.json', JSON.stringify(orders, null, 4), function(err) {
-        console.log(err);
-    });
+    writeJson('orders', orders);
+
     carts[currentSessions[req.sessionID]] = [];
-    fs.writeFile('./jsons/carts.json', JSON.stringify(carts, null, 4), function(err) {
-        console.log(err);
-    });
+    writeJson('carts', carts);
+
     res.json({ success: true });
 
 });
 
 app.get("/flowers", function(req, res) {
-    res.render("partials/flowerList", { flowers: flowers });
+    res.render("partials/flowerList", { flowers: flowers, isLoggedIn: req.sessionID in currentSessions });
 });
 app.get("/branches", function(req, res) {
     let currentUser = getUserBySessID(req.sessionID);
@@ -253,9 +244,8 @@ app.post("/createBranch", function(req, res) {
         active: true
     };
     branches.push(newBranch);
-    fs.writeFile('./jsons/branches.json', JSON.stringify(branches, null, 4), function(err) {
-        console.log(err);
-    });
+    writeJson('branches', branches);
+
     res.json({ success: true, message: "Branch was created" });
 
 
@@ -413,9 +403,7 @@ app.post("/deployOrder", (req, res) => {
         return;
     }
     currentOrder.isDeployed = true;
-    fs.writeFile('./jsons/orders.json', JSON.stringify(orders, null, 4), function(err) {
-        console.log(err);
-    });
+    writeJson('orders', orders);
     res.json({ success: true, message: "The order has been successfully deployed" });
 });
 
@@ -437,9 +425,8 @@ app.post("/acceptOrder", (req, res) => {
     }
     currentOrder.isDelivered = true;
     currentOrder.deliveryTime = getCurrentDateTime();
-    fs.writeFile('./jsons/orders.json', JSON.stringify(orders, null, 4), function(err) {
-        console.log(err);
-    });
+    writeJson('orders', orders);
+
     res.json({ success: true, message: "The order has been accepted" });
 });
 
@@ -453,9 +440,15 @@ app.listen(8072, function() {
 
 function addUser(newUser) {
     users.push(newUser);
-    fs.writeFile('./jsons/users.json', JSON.stringify(users, null, 4), function(err) {
+    writeJson('users', users);
+
+}
+
+function writeJson(file, obj) {
+    fs.writeFile('./jsons/' + file + '.json', JSON.stringify(obj, null, 4), function(err) {
         console.log(err);
     });
+
 }
 
 function setCookies(res, user) {

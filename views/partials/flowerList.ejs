@@ -2,7 +2,7 @@
 
     <% flowers.forEach(flower=>{ %>
         <li class="col-md-4" style="float: left; padding-bottom: 15px; padding-right: 15px;">
-            <%- include('./flower', {flower: flower}); %>
+            <%- include('./flower', {flower: flower, isLoggedIn: isLoggedIn}); %>
         </li>
         <% }); %>
 </ul>

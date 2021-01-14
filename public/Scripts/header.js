@@ -1,5 +1,5 @@
 var currentRequest;
-var adding = true;
+
 async function mainLoad(route) {
     loading(true);
     console.log(currentRequest);
@@ -16,6 +16,9 @@ async function mainLoad(route) {
         error: disableChanges
     });
 }
+
+
+var adding = true;
 
 function disableChanges(error) {
     alert("Failed to connect to server");
